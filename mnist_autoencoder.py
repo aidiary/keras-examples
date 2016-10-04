@@ -1,7 +1,6 @@
 import numpy as np
 from keras.layers import Input, Dense
 from keras.models import Model
-from keras.regularizers import activity_l1
 from keras.datasets import mnist
 import matplotlib.pyplot as plt
 
