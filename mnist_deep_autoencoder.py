@@ -42,20 +42,22 @@ if __name__ == "__main__":
                     validation_data=(X_test, X_test))
 
     # create a separate encoder model
-    layers = autoencoder.layers
-    encoder = Model(input=input_img,
-                    output=encoded)
+#    layers = autoencoder.layers
+#    encoder = Model(input=input_img,
+#                    output=encoded)
 
     # create a separate decoder model
-    encoded_input = Input(shape=(32, ))
-    layers = autoencoder.layers
-    decoded_layers = layers[-1]
-    decoder = Model(input=encoded_input,
-                    output=layers[-1](layers[-2](layers[-3](encoded_input))))
+#    encoded_input = Input(shape=(32, ))
+#    layers = autoencoder.layers
+#    decoded_layers = layers[-1]
+#    decoder = Model(input=encoded_input,
+#                    output=layers[-1](layers[-2](layers[-3](encoded_input))))
 
     # encode and decode some digits
-    encoded_imgs = encoder.predict(X_test)
-    decoded_imgs = decoder.predict(encoded_imgs)
+#    encoded_imgs = encoder.predict(X_test)
+#    decoded_imgs = decoder.predict(encoded_imgs)
+
+    decoded_imgs = autoencoder.predict(X_test)
 
     n = 10
     plt.figure(figsize=(20, 4))
