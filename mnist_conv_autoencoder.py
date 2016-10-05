@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     # create model
-    # 4D tensor dim_ordering is (samples, rows, cols, channels) as default (tf)
-    input_img = Input(shape=(28, 28, 1))
+    # use image_dim_ordering = th (~/.keras/keras.json)
+    input_img = Input(shape=(1, 28, 28))
 
     x = Convolution2D(16, 3, 3, activation='relu', border_mode='same')(input_img)
     x = MaxPooling2D((2, 2), border_mode='same')(x)
@@ -41,15 +41,15 @@ if __name__ == "__main__":
     X_train = X_train.astype('float32') / 255.0
     X_test = X_test.astype('float32') / 255.0
 
-    X_train = np.reshape(X_train, (len(X_train), 28, 28, 1))
-    X_test = np.reshape(X_test, (len(X_test), 28, 28, 1))
+    X_train = np.reshape(X_train, (len(X_train), 1, 28, 28))
+    X_test = np.reshape(X_test, (len(X_test), 1, 28, 28))
 
     print(X_train.shape)
     print(X_test.shape)
 
     # train model
     autoencoder.fit(X_train, X_train,
-                    nb_epoch=1,
+                    nb_epoch=50,
                     batch_size=128,
                     shuffle=True,
                     validation_data=(X_test, X_test))
