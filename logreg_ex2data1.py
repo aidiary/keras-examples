@@ -2,14 +2,16 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn import preprocessing
+
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation
 
 """2-class logistic regression by keras"""
 
-def plot_data(X, y):
-    positive = [i for i in range(len(y)) if y[i] == 1]
-    negative = [i for i in range(len(y)) if y[i] == 0]
+def plot_data(X, t):
+    positive = [i for i in range(len(t)) if t[i] == 1]
+    negative = [i for i in range(len(t)) if t[i] == 0]
 
     plt.scatter(X[positive, 0], X[positive, 1], c='red', marker='o', label='positive')
     plt.scatter(X[negative, 0], X[negative, 1], c='blue', marker='o', label='negative')
@@ -22,11 +24,14 @@ if __name__ == '__main__':
     # load training data
     data = np.genfromtxt(os.path.join('data', 'ex2data1.txt'), delimiter=',')
     X = data[:, (0, 1)]
-    y = data[:, 2]
+    t = data[:, 2]
+
+    # normalize data
+    X = preprocessing.scale(X)
 
     # plot training data
     plt.figure(1)
-    plot_data(X, y)
+    plot_data(X, t)
 
     # create the model
     model = Sequential()
@@ -35,7 +40,7 @@ if __name__ == '__main__':
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # fit the model
-    model.fit(X, y, nb_epoch=1000, batch_size=1, verbose=1)
+    model.fit(X, t, nb_epoch=1000, batch_size=5, verbose=1)
 
     # get the learned weight
     weights = model.layers[0].get_weights()
@@ -45,13 +50,14 @@ if __name__ == '__main__':
 
     # draw decision boundary
     plt.figure(1)
-    xmin, xmax = min(X[:, 1]), max(X[:, 1])
+    xmin, xmax = min(X[:, 0]), max(X[:, 0])
+    ymin, ymax = min(X[:, 1]), max(X[:, 1])
     xs = np.linspace(xmin, xmax, 100)
     ys = [- (w1 / w2) * x - (b / w2) for x in xs]
     plt.plot(xs, ys, 'b-', label='decision boundary')
     plt.xlabel('x1')
     plt.ylabel('x2')
-    plt.xlim((30, 100))
-    plt.ylim((30, 100))
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
     plt.legend()
     plt.show()
