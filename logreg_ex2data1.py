@@ -33,7 +33,7 @@ if __name__ == '__main__':
     plt.figure(1)
     plot_data(X, t)
 
-    # create the model
+    # create the logistic regression model
     model = Sequential()
     model.add(Dense(1, input_shape=(2, )))
     model.add(Activation('sigmoid'))
