@@ -1,4 +1,4 @@
-Keras目次
+Kerasメモ
 2016/10/18
 
 1. Kerasはじめます
@@ -13,5 +13,7 @@ Keras目次
     - keras.jsonの設定（バックエンドとimageの次元切り替え）
 
 3. Kerasによる2クラスロジスティック回帰
-4. モデル構造の可視化
-5. 損失の可視化
+
+4. Kerasで2値分類（Pima Indians Diabetes Data Set）
+
+    - http://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
