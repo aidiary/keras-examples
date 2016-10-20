@@ -76,11 +76,13 @@ model.add(Activation('sigmoid'))
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 ```
 
-modelの組み立て方は上の方法がスタンダードだけど、[Functional API](https://keras.io/ja/getting-started/functional-api-guide/)を使うともっと柔軟にモデルが作れるようだ。あとでこのAPIを使った書き方もしてみよう。
+このタスクは0または1を予測する二値分類なので損失関数には`binary_crossentropy`を用いた。あとで実験するがMNISTのような多値分類では`categorical_crossentropy`を用いる。最適化アルゴリズムにはAdam、評価指標には精度を用いた。これは訓練データで精度求めているのかな？要検証。
+
+modelの組み立て方は上の方法がスタンダードだけれど、[Functional API](https://keras.io/ja/getting-started/functional-api-guide/)を使うともっと柔軟にモデルが作れるようだ。あとでこのAPIを使った書き方もしてみよう。
 
 # 訓練
 
-モデルの訓練はscikit-learnと同じくfit()という関数にデータとラベルを渡せばよい。fit()には、固定のエポック数（nb_epoch）、バッチサイズ（batch_size）、経過出力方法（verbose）を指定する。verboseを1にしておくと学習経過を棒グラフで表示してくれるので非常に便利！エポック数を固定したくない場合は、Early-stoppingという仕組みを使うと収束判定が自動化できる
+モデルの訓練はscikit-learnと同じくfit()という関数にデータとラベルを渡せばよい。fit()には、固定のエポック数（nb_epoch）、バッチサイズ（batch_size）、経過出力方法（verbose）を指定する。verboseを1にしておくと学習経過を棒グラフで表示してくれるので非常に便利！あとで紹介するEarly-stoppingを使うと固定エポックだけループを回すのではなく、収束判定して止めてくれるようになる。
 
 ```python
 # fit the model
@@ -137,14 +139,6 @@ plt.show()
 
 となり、分類する直線が学習できていることがわかる。
 今回は、テストデータを使った評価などは行っていない。
-
-このシンプルなスクリプトをベースに
-
-- モデル構造の可視化
-- Early-stoppingによる収束判定
-- 損失の可視化
-
-などKerasの便利機能を順に試していきたい。
 
 # 参考
 
