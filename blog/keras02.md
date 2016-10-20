@@ -17,7 +17,7 @@ KerasのバックエンドとしてTheanoまたはTensorFlowが選べるのだ�
 
 仮想マシンだとホストにGPUがあっても使えないのがちょっと問題。いずれAWSやさくらのGPUインスタンスも試してみたい。
 
-ちなみにAtomやPyCharmなどのGUIエディタを使いたいがため、UbuntuはGUI込みでインストールした。3Dアクセラレータ有効にしてもちょっともっさりする。AtomはRemote編集もできるみたいだけどどれくらい使えるかな？
+ちなみにAtomやPyCharmなどのGUIエディタを使いたいがため、UbuntuはGUI込みでインストールした。3Dアクセラレータ有効にしてもちょっともっさりする。AtomのRemote-FTPを使って遠隔編集でもよいかも。
 
 # 2. Anaconda Python 3.5 versionをインストール
 
