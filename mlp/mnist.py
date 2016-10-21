@@ -1,10 +1,13 @@
 import numpy as np
+
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
-from keras.optimizers import SGD, Adam, RMSprop
+from keras.optimizers import Adam
 from keras.utils import np_utils
 
+# MNISTの数字分類
+# 参考
 # https://github.com/fchollet/keras/blob/master/examples/mnist_mlp.py
 
 if __name__ == "__main__":
@@ -12,22 +15,27 @@ if __name__ == "__main__":
     nb_classes = 10
     nb_epoch = 20
 
-    # the data, shuffled and split between train and test sets
+    # MNISTデータのロード
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
+    # 画像を1次元配列化
     X_train = X_train.reshape(60000, 784)
     X_test = X_test.reshape(10000, 784)
+
+    # 画素を0.0-1.0の範囲に変換
     X_train = X_train.astype('float32')
     X_test = X_test.astype('float32')
     X_train /= 255
     X_test /= 255
+
     print(X_train.shape[0], 'train samples')
     print(X_test.shape[0], 'test samples')
-    
-    # convert class vectors to binary class matrices
+
+    # one-hot-encoding
     Y_train = np_utils.to_categorical(y_train, nb_classes)
     Y_test = np_utils.to_categorical(y_test, nb_classes)
 
+    # 多層ニューラルネットワークモデルを構築
     model = Sequential()
     model.add(Dense(512, input_shape=(784,)))
     model.add(Activation('relu'))
@@ -38,19 +46,26 @@ if __name__ == "__main__":
     model.add(Dense(10))
     model.add(Activation('softmax'))
 
+    # モデルのサマリを表示
     model.summary()
 
+    # モデルをコンパイル
     model.compile(loss='categorical_crossentropy',
-                  optimizer=RMSprop(),
+                  optimizer=Adam(),
                   metrics=['accuracy'])
 
+    # モデルの訓練
     history = model.fit(X_train, Y_train,
                         batch_size=batch_size,
                         nb_epoch=nb_epoch,
                         verbose=1,
                         validation_data=(X_test, Y_test))
 
-    score = model.evaluate(X_test, Y_test, verbose=0)
+    # 学習履歴をプロット
+    plot_history(history)
 
-    print('Test score:', score[0])
-    print('Test accuracy:', score[1])
+    # モデルの評価
+    loss, acc = model.evaluate(X_test, Y_test, verbose=0)
+
+    print('Test loss:', loss)
+    print('Test acc:', acc)
