@@ -22,7 +22,7 @@ if __name__ == '__main__':
     np.random.seed(seed)
 
     # load training data
-    data = np.genfromtxt(os.path.join('data', 'ex2data1.txt'), delimiter=',')
+    data = np.genfromtxt(os.path.join('..', 'data', 'ex2data1.txt'), delimiter=',')
     X = data[:, (0, 1)]
     t = data[:, 2]
 
