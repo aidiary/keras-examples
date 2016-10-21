@@ -1,19 +1,42 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
 from keras.optimizers import Adam
+from keras.callbacks import EarlyStopping
 from keras.utils import np_utils
 
 # MNISTの数字分類
 # 参考
 # https://github.com/fchollet/keras/blob/master/examples/mnist_mlp.py
 
+def plot_history(history):
+    # print(history.history.keys())
+
+    # 精度の履歴をプロット
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+    # 損失の履歴をプロット
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
 if __name__ == "__main__":
     batch_size = 128
     nb_classes = 10
-    nb_epoch = 20
+    nb_epoch = 100
 
     # MNISTデータのロード
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -49,6 +72,9 @@ if __name__ == "__main__":
     # モデルのサマリを表示
     model.summary()
 
+    # Early-stopping
+    early_stopping = EarlyStopping()
+
     # モデルをコンパイル
     model.compile(loss='categorical_crossentropy',
                   optimizer=Adam(),
@@ -59,7 +85,8 @@ if __name__ == "__main__":
                         batch_size=batch_size,
                         nb_epoch=nb_epoch,
                         verbose=1,
-                        validation_data=(X_test, Y_test))
+                        validation_data=(X_test, Y_test),
+                        callbacks=[early_stopping])
 
     # 学習履歴をプロット
     plot_history(history)

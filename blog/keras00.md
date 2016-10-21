@@ -31,9 +31,14 @@ http://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep
 
 # MNIST
 
-多クラスロジスティック回帰
 多層ニューラルネット
 精度を比較
+
+early_stopping
+history plot
+
+固定の100epochだとtest lossが上がっている（過学習！）
+early_stoppingを使うと上がる前に打ち切れる
 
 # CNN (MNIST)
 # CNN (CIFAR-10)
