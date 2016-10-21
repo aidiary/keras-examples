@@ -16,8 +16,31 @@ http://machinelearningmastery.com/introduction-python-deep-learning-library-kera
 
 # Kerasで2値分類（Pima Indians Diabetes Data Set）
 
+多層ニューラルネットワーク
 http://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
 
+# Kerasで多値分類（Iris）
+
+https://github.com/fastforwardlabs/keras-hello-world/blob/master/kerashelloworld.ipynb
+http://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
+
+# Kerasで回帰問題
+
+ロジスティック回帰は回帰とつくけど分類のアルゴリズム
+出力が実数になる回帰を取り上げる
+
+# MNIST
+
+多クラスロジスティック回帰
+多層ニューラルネット
+精度を比較
+
+# CNN (MNIST)
+# CNN (CIFAR-10)
+
+# 学習済みモデルの保存
+
+http://machinelearningmastery.com/save-load-keras-deep-learning-models/
 
 # TensorFlowのラッパーライブラリ比較
 
