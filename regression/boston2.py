@@ -24,12 +24,6 @@ if __name__ == "__main__":
     X = boston.data
     Y = boston.target
 
-    # scikit-learnで使えるようにラッパーをつける
-    estimator = KerasRegressor(build_fn=baseline_model,
-                               nb_epoch=100,
-                               batch_size=5,
-                               verbose=0)
-
     # データ正規化、回帰を行うパイプラインを作成
     estimators = []
     estimators.append(('standardize',
