@@ -16,13 +16,13 @@ if __name__ == "__main__":
     X = dataset[:, 0:8]
     Y = dataset[:, 8]
 
-    # create model
+    # build the model
     model = Sequential()
     model.add(Dense(12, input_dim=8, init='uniform', activation='relu'))
     model.add(Dense(8, init='uniform', activation='relu'))
     model.add(Dense(1, init='uniform', activation='sigmoid'))
 
-    # compile model
+    # compile the model
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     # fit the model
