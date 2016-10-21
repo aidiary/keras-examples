@@ -7,9 +7,10 @@ from sklearn import preprocessing
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation
 
-"""2-class logistic regression by keras"""
+"""2クラスロジスティック回帰"""
 
 def plot_data(X, t):
+    # ラベル1を正例、ラベル0を負例とする
     positive = [i for i in range(len(t)) if t[i] == 1]
     negative = [i for i in range(len(t)) if t[i] == 0]
 
@@ -17,38 +18,38 @@ def plot_data(X, t):
     plt.scatter(X[negative, 0], X[negative, 1], c='blue', marker='o', label='negative')
 
 if __name__ == '__main__':
-    # fix random seed
+    # 結果を再現できるように乱数の種を固定
     seed = 1
     np.random.seed(seed)
 
-    # load training data
+    # 訓練データをロード
     data = np.genfromtxt(os.path.join('..', 'data', 'ex2data1.txt'), delimiter=',')
     X = data[:, (0, 1)]
     t = data[:, 2]
 
-    # normalize data
+    # データの各次元が平均0、分散1になるように正規化
     X = preprocessing.scale(X)
 
-    # plot training data
+    # 訓練データをプロット
     plt.figure(1)
     plot_data(X, t)
 
-    # build the logistic regression model
+    # ロジスティック回帰モデルを構築
     model = Sequential()
     model.add(Dense(1, input_shape=(2, )))
     model.add(Activation('sigmoid'))
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-    # fit the model
+    # 訓練
     model.fit(X, t, nb_epoch=1000, batch_size=5, verbose=1)
 
-    # get the learned weight
+    # 学習した重みを取得
     weights = model.layers[0].get_weights()
     w1 = weights[0][0, 0]
     w2 = weights[0][1, 0]
     b = weights[1][0]
 
-    # draw decision boundary
+    # 決定境界を描画
     plt.figure(1)
     xmin, xmax = min(X[:, 0]), max(X[:, 0])
     ymin, ymax = min(X[:, 1]), max(X[:, 1])
