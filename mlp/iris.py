@@ -7,13 +7,6 @@ from keras.models import Sequential
 from keras.layers.core import Dense, Activation
 from keras.utils import np_utils
 
-def build_logistic_regression():
-    """ロジスティック回帰モデルを構築"""
-    model = Sequential()
-    model.add(Dense(3, input_shape=(4, )))
-    model.add(Activation('softmax'))
-    return model
-
 def build_multilayer_perceptron():
     """多層パーセプトロンモデルを構築"""
     model = Sequential()
@@ -36,11 +29,10 @@ if __name__ == "__main__":
     Y = np_utils.to_categorical(Y)
 
     # 訓練データとテストデータに分割
-    train_X, test_X, train_Y, test_Y = train_test_split(X, Y, train_size=0.5)
+    train_X, test_X, train_Y, test_Y = train_test_split(X, Y, train_size=0.8)
     print(train_X.shape, test_X.shape, train_Y.shape, test_Y.shape)
 
     # モデル構築
-#    model = build_logistic_regression()
     model = build_multilayer_perceptron()
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
