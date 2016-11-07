@@ -13,6 +13,7 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation
 from keras.utils import np_utils
+from sklearn import preprocessing
 
 def build_multilayer_perceptron():
     """多層パーセプトロンモデルを構築"""
@@ -28,6 +29,9 @@ if __name__ == "__main__":
     iris = datasets.load_iris()
     X = iris.data
     Y = iris.target
+
+    # データの標準化
+    X = preprocessing.scale(X)
 
     # ラベルをone-hot-encoding形式に変換
     # 0 => [1, 0, 0]
@@ -46,7 +50,7 @@ if __name__ == "__main__":
                   metrics=['accuracy'])
 
     # モデル訓練
-    model.fit(train_X, train_Y, nb_epoch=500, batch_size=1, verbose=1)
+    model.fit(train_X, train_Y, nb_epoch=50, batch_size=1, verbose=1)
 
     # モデル評価
     loss, accuracy = model.evaluate(test_X, test_Y, verbose=0)
@@ -67,7 +71,7 @@ if __name__ == "__main__":
 
 必要な前処理メソッドはたいていscikit-learnに実装されているので自分で実装する前に探してみたほうがよさそう。
 
-5回くらい実行してテストデータの精度を求めると93%、97%、97%、100%、100%となった。どのサンプルがテストデータに選ばれるかによって精度が変わるようだ。分類境界あたりのサンプルがテストデータとして選ばれると予測が難しくなり精度が下がりそうなのはわかる。
+5回くらい実行してテストデータの精度を求めると97%、93%、100%、93%、97%となった。どのサンプルがテストデータに選ばれるかによって精度が変わるようだ。分類境界あたりのサンプルがテストデータとして選ばれると予測が難しくなり精度が下がりそうなのはわかる。
 
 こういう場合は、何度か実行して平均を求めるのがセオリーかな。でもDeep Learningだと学習に何日もかかるケースがありそうだし、そんなに何回もデータセットの分割を変えて実行はできないなあ。どうするのが一般的なんだろうか？
 

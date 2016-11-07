@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation
 from keras.utils import np_utils
+from sklearn import preprocessing
 
 def build_multilayer_perceptron():
     """多層パーセプトロンモデルを構築"""
@@ -21,6 +22,9 @@ if __name__ == "__main__":
     iris = datasets.load_iris()
     X = iris.data
     Y = iris.target
+
+    # データの標準化
+    X = preprocessing.scale(X)
 
     # ラベルをone-hot-encoding形式に変換
     # 0 => [1, 0, 0]
@@ -39,7 +43,7 @@ if __name__ == "__main__":
                   metrics=['accuracy'])
 
     # モデル訓練
-    model.fit(train_X, train_Y, nb_epoch=500, batch_size=1, verbose=1)
+    model.fit(train_X, train_Y, nb_epoch=50, batch_size=1, verbose=1)
 
     # モデル評価
     loss, accuracy = model.evaluate(test_X, test_Y, verbose=0)
