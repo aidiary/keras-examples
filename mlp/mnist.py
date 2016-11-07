@@ -93,7 +93,7 @@ if __name__ == "__main__":
                         batch_size=batch_size,
                         nb_epoch=nb_epoch,
                         verbose=1,
-                        validation_data=(X_test, Y_test),
+                        validation_split=0.1,
                         callbacks=[early_stopping])
 
     # 学習履歴をプロット
