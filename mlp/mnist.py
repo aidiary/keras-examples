@@ -36,7 +36,7 @@ def plot_history(history):
     plt.title('model accuracy')
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
-    plt.legend(['train', 'test'], loc='upper left')
+    plt.legend(['acc', 'val_acc'], loc='lower right')
     plt.show()
 
     # 損失の履歴をプロット
@@ -45,7 +45,7 @@ def plot_history(history):
     plt.title('model loss')
     plt.xlabel('epoch')
     plt.ylabel('loss')
-    plt.legend(['train', 'test'], loc='upper left')
+    plt.legend(['loss', 'val_loss'], loc='lower right')
     plt.show()
 
 if __name__ == "__main__":
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     plot(model, show_shapes=True, show_layer_names=True, to_file='model.png')
 
     # Early-stopping
-    early_stopping = EarlyStopping()
+    early_stopping = EarlyStopping(verbose=1)
 
     # モデルをコンパイル
     model.compile(loss='categorical_crossentropy',
