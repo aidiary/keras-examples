@@ -31,20 +31,22 @@ def plot_history(history):
     # print(history.history.keys())
 
     # 精度の履歴をプロット
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
+    plt.plot(history.history['acc'], marker='.')
+    plt.plot(history.history['val_acc'], marker='.')
     plt.title('model accuracy')
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
+    plt.grid()
     plt.legend(['acc', 'val_acc'], loc='lower right')
     plt.show()
 
     # 損失の履歴をプロット
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
+    plt.plot(history.history['loss'], marker='.')
+    plt.plot(history.history['val_loss'], marker='.')
     plt.title('model loss')
     plt.xlabel('epoch')
     plt.ylabel('loss')
+    plt.grid()
     plt.legend(['loss', 'val_loss'], loc='lower right')
     plt.show()
 
