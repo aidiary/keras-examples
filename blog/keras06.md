@@ -2,7 +2,7 @@ KerasでMNIST
 
 2016/11/7
 
-今回は、KerasでMNISTの数字認識をするプログラムを書いた。このタスクは、[Kerasの例題](https://github.com/fchollet/keras/blob/master/examples/mnist_mlp.py)にも含まれている。
+今回は、KerasでMNISTの数字認識をするプログラムを書いた。このタスクは、[Kerasの例題](https://github.com/fchollet/keras/blob/master/examples/mnist_mlp.py)にも含まれている。今まで使ってこなかったモデルの可視化、Early-stoppingによる収束判定、学習履歴のプロットなども取り上げてみた。
 
 # MNISTデータのロードと前処理
 
@@ -34,9 +34,9 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 ```
 
-- デフォルトでは `(60000, 28, 28)` の形状なので `(60000, 784)` に `reshape`
-- 画像データ（`X`）は0-255の画素値が入っているため0.0-1.0に正規化
-- クラスラベル（`y`）は数字の0-9が入っているためone-hotエンコーディング型式に変換
+KerasでダウンロードしたMNISTのデフォルトの形状は `(60000, 28, 28)` なので `(60000, 784)` に `reshape`する。各サンプルが784次元ベクトルになるようにしている。画像データ（`X`）は0-255の画素値が入っているため0.0-1.0に正規化する。クラスラベル（`y`）は数字の0-9が入っているためone-hotエンコーディング型式に変換する。
+
+`nb_classes = 10`を省略すると`y_test`に入っているラベルから自動的にクラス数を推定してくれるようだが、必ずしも0-9のラベルすべてが`y_test`に含まれるとは限らないため`nb_classes = 10`を指定したほうが安全のようだ。
 
 # モデルの可視化
 
@@ -165,10 +165,11 @@ def plot_history(history):
 plot_history(history)
 ```
 
-今回は、いろいろ便利なツールを使ってみた。
+今回は、Kerasの便利なツールをいろいろ使ってみた。
 
 # 参考
 
 - [Keras examples](https://github.com/fchollet/keras/blob/master/examples/mnist_mlp.py)
 - [コールバックの使い方](https://keras.io/ja/callbacks/)
 - [Display Deep Learning Model Training History in Keras](http://machinelearningmastery.com/display-deep-learning-model-training-history-in-keras/)
+- [Dropout Regularization For Neural Networks](http://machinelearningmastery.com/dropout-regularization-deep-learning-models-keras/)
