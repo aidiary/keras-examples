@@ -80,13 +80,13 @@ if __name__ == "__main__":
     model.summary()
     plot(model, show_shapes=True, show_layer_names=True, to_file='model.png')
 
-    # Early-stopping
-    early_stopping = EarlyStopping(verbose=1)
-
     # モデルをコンパイル
     model.compile(loss='categorical_crossentropy',
                   optimizer=Adam(),
                   metrics=['accuracy'])
+
+    # Early-stopping
+    early_stopping = EarlyStopping(patience=0, verbose=1)
 
     # モデルの訓練
     history = model.fit(X_train, Y_train,
