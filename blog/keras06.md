@@ -116,7 +116,7 @@ Total params: 669706
 
 Kerasではコールバック関数として`EarlyStopping`が実装されているため`fit()`の`callbacks`オプションに設定する。**`EarlyStopping`を使うには必ずバリデーションデータセットを用意する必要がある**。`fit()`のオプションで`validation_data`を直接指定することもできるが、`validation_split`を指定することで**訓練データの一部をバリデーションデータセットとして使う**ことができる。
 
-ときどきテストデータセットをバリデーションデータセットとして使っているケースもあるがこれはダメらしい。訓練データセット、バリデーションデータセット、テストデータセットと3つに分けたほうがよい。
+[Keras examples](https://github.com/fchollet/keras/blob/master/examples/mnist_mlp.py)もそうだが、テストデータセットをバリデーションデータセットとして使うのは本来ダメらしい。[バリデーションデータセットとテストデータセットは分けたほうがよい](http://stats.stackexchange.com/questions/19048/what-is-the-difference-between-test-set-and-validation-set)。
 
 ```python
 # Early-stopping
