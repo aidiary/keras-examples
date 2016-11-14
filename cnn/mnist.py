@@ -9,6 +9,7 @@ from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping
 from keras.utils import np_utils
 from keras import backend as K
+from keras.utils.visualize_util import plot
 
 # MNISTの数字分類
 # 参考: https://github.com/fchollet/keras/blob/master/examples/mnist_cnn.py
@@ -29,6 +30,7 @@ def build_cnn(input_shape, nb_filters, kernel_size, pool_size):
     model.add(Dropout(0.25))
 
     model.add(Flatten())
+
     model.add(Dense(128))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
@@ -101,6 +103,7 @@ if __name__ == "__main__":
 
     # モデルのサマリを表示
     model.summary()
+    plot(model, show_shapes=True, to_file='mnist_cnn.png')
 
     # モデルをコンパイル
     model.compile(loss='categorical_crossentropy',
