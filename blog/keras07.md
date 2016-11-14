@@ -81,3 +81,7 @@ def build_cnn(input_shape, nb_filters, kernel_size, pool_size):
 残りは前回の多層パーセプトロンとまったく同じなので省略。
 
 実行すると7エポックほどで収束し、精度は99%近く出る。
+
+# 参考
+
+- [Handwritten Digit Recognition using Convolutional Neural Networks in Python with Keras](http://machinelearningmastery.com/handwritten-digit-recognition-using-convolutional-neural-networks-python-keras/)
