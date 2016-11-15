@@ -14,16 +14,16 @@ from keras.utils.visualize_util import plot
 # MNISTの数字分類
 # 参考: https://github.com/fchollet/keras/blob/master/examples/mnist_cnn.py
 
-def build_cnn(input_shape, nb_filters, kernel_size, pool_size):
+def build_cnn(input_shape, nb_filters, filter_size, pool_size):
     model = Sequential()
 
     model.add(Convolution2D(nb_filters,
-                            kernel_size[0], kernel_size[1],
+                            filter_size[0], filter_size[1],
                             border_mode='valid',
                             input_shape=input_shape))
     model.add(Activation('relu'))
 
-    model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
+    model.add(Convolution2D(nb_filters, filter_size[0], filter_size[1]))
     model.add(Activation('relu'))
 
     model.add(MaxPooling2D(pool_size=pool_size))
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     img_rows, img_cols = 28, 28
     nb_filters = 32
-    kernel_size = (3, 3)
+    filter_size = (3, 3)
     pool_size = (2, 2)
 
     # MNISTデータのロード
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     Y_test = np_utils.to_categorical(y_test, nb_classes)
 
     # 畳み込みニューラルネットワークを構築
-    model = build_cnn(input_shape, nb_filters, kernel_size, pool_size)
+    model = build_cnn(input_shape, nb_filters, filter_size, pool_size)
 
     # モデルのサマリを表示
     model.summary()
