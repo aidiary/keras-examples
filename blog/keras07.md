@@ -13,7 +13,7 @@ Kerasによる畳み込みニューラルネットワーク
 - `th`では、(サンプル数, チャンネル, 画像の行数, 画像の列数)
 - `tf`では、（サンプル数, 画像の行数, 画像の列数, チャンネル）
 
-の並び順になる。例えば、`image_dim_ordering`が`tf`の場合、`X_train[sample][channel][row][col]`で画像の画素値にアクセスできる。両方に対応する場合は、下のようなコードを書く必要がある。keras.jsonの設定は`keras.backend`モジュールの`image_dim_ordering()`で取得できる。
+の並び順になる。例えば、`image_dim_ordering`が`tf`の場合、`X_train[sample][row][col][channel]`で画像の画素値にアクセスできる。両方に対応する場合は、下のようなコードを書く必要がある。keras.jsonの設定は`keras.backend`モジュールの`image_dim_ordering()`で取得できる。
 
 ```python
 from keras import backend as K
