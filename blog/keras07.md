@@ -74,8 +74,6 @@ def build_cnn(input_shape, nb_filters, filter_size, pool_size):
 
 どうやらこの図の4次元テンソルは`image_dim_ordering`を`tf`にしていても`th`と同じ（サンプル数, チャネル数, 行数,　列数) になるようだ・・・ちゃんと `image_dim_ordering`の設定を見るようにしてほしいところ。
 
-`Convolution2D`の`kernel_size`はフィルタサイズのこと。
-
 `Convolution2D`の`border_mode`を`valid`にすると出力画像は[入力画像より小さくなる](http://aidiary.hatenablog.com/entry/20150626/1435329581)（2015/6/26）。一方、`same`にすると自動的にパディングして出力画像が入力画像と同じサイズになるよう調整される。出力画像のサイズは計算式があるが、Kerasでは自動的に計算してくれている。
 
 畳み込みニューラルネットのパラメータ数はフィルタのパラメータ数になる。例えば、最初の畳み込み層のパラメータ数は、[tex:32 \times 1 \times 3 \times 3 + 32 = 320] となる。32を足すのは各フィルタにあるスカラーのバイアス項。二つ目の畳み込み層のパラメータ数は、[tex:32 \times 32 \times 3 \times 3 + 32 = 9248]となる。
@@ -84,7 +82,11 @@ def build_cnn(input_shape, nb_filters, filter_size, pool_size):
 
 実行すると7エポックほどで収束し、精度は99%近く出る。
 
+# フィルタの可視化
+
+
 # 参考
 
 - [Handwritten Digit Recognition using Convolutional Neural Networks in Python with Keras](http://machinelearningmastery.com/handwritten-digit-recognition-using-convolutional-neural-networks-python-keras/)
 - [How does border_mode work?](https://github.com/fchollet/keras/issues/1984)
+- [How convolutional neural networks see the world](https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html)
