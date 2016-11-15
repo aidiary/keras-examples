@@ -11,6 +11,8 @@ from keras.utils import np_utils
 from keras import backend as K
 from keras.utils.visualize_util import plot
 
+from sklearn.preprocessing import MinMaxScaler
+
 # MNISTの数字分類
 # 参考: https://github.com/fchollet/keras/blob/master/examples/mnist_cnn.py
 
@@ -40,6 +42,7 @@ def build_cnn(input_shape, nb_filters, filter_size, pool_size):
 
     return model
 
+
 def plot_history(history):
     # print(history.history.keys())
 
@@ -61,6 +64,35 @@ def plot_history(history):
     plt.legend(['train', 'test'], loc='upper left')
     plt.show()
 
+
+def visualize_filter(model):
+    weights = model.layers[0].get_weights()
+    W, b = weights
+
+    print(W.shape)  # (nb_row, nb_col, nb_channel, nb_filter)
+    print(b.shape)  # (nb_filters, )
+
+    W = W.transpose(3, 2, 0, 1)  # (nb_filter, nb_channel, nb_row, nb_col)
+
+    print(W.shape)
+
+    nb_filter, nb_channel, nb_row, nb_col = W.shape
+
+    plt.figure()
+    for i in range(nb_filters):
+        # フィルタの画像
+        im = W[i, 0]
+
+        # 重みを0-255のスケールに変換
+        scaler = MinMaxScaler(feature_range=(0, 255))
+        im = scaler.fit_transform(im)
+
+        plt.subplot(4, 8, i + 1)
+        plt.axis('off')
+        plt.imshow(im, cmap="gray")
+    plt.show()
+
+
 if __name__ == "__main__":
     batch_size = 128
     nb_classes = 10
@@ -68,7 +100,7 @@ if __name__ == "__main__":
 
     img_rows, img_cols = 28, 28
     nb_filters = 32
-    filter_size = (3, 3)
+    filter_size = (5, 5)
     pool_size = (2, 2)
 
     # MNISTデータのロード
@@ -110,6 +142,9 @@ if __name__ == "__main__":
                   optimizer='adam',
                   metrics=['accuracy'])
 
+    # 学習前の1層目のフィルタを可視化
+    visualize_filter(model)
+
     # Early-stopping
     early_stopping = EarlyStopping()
 
@@ -120,6 +155,9 @@ if __name__ == "__main__":
                        verbose=1,
                        validation_split=0.1,
                        callbacks=[early_stopping])
+
+    # 学習後の1層目のフィルタを可視化
+    visualize_filter(model)
 
     # 学習履歴をプロット
     plot_history(history)
