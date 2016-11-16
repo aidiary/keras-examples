@@ -66,18 +66,17 @@ def plot_history(history):
 
 
 def visualize_filter(model):
-    weights = model.layers[0].get_weights()
-    W, b = weights
+    # 最初の畳み込み層の重みを取得
+    # (nb_row, nb_col, nb_channel, nb_filter)
+    W = model.layers[0].get_weights()[0]
 
-    print(W.shape)  # (nb_row, nb_col, nb_channel, nb_filter)
-    print(b.shape)  # (nb_filters, )
-
-    W = W.transpose(3, 2, 0, 1)  # (nb_filter, nb_channel, nb_row, nb_col)
-
-    print(W.shape)
+    # 次元を並べ替え
+    # (nb_filter, nb_channel, nb_row, nb_col)
+    W = W.transpose(3, 2, 0, 1)
 
     nb_filter, nb_channel, nb_row, nb_col = W.shape
 
+    # 32個（手抜きで固定）のフィルタの重みを描画
     plt.figure()
     for i in range(nb_filters):
         # フィルタの画像
