@@ -67,12 +67,14 @@ def plot_history(history):
 
 def visualize_filter(model):
     # 最初の畳み込み層の重みを取得
-    # (nb_row, nb_col, nb_channel, nb_filter)
+    # tf => (nb_row, nb_col, nb_channel, nb_filter)
+    # th => (nb_filter, nb_channel, nb_row, nb_col)
     W = model.layers[0].get_weights()[0]
 
     # 次元を並べ替え
-    # (nb_filter, nb_channel, nb_row, nb_col)
-    W = W.transpose(3, 2, 0, 1)
+    if K.image_dim_ordering() == 'tf':
+        # (nb_filter, nb_channel, nb_row, nb_col)
+        W = W.transpose(3, 2, 0, 1)
 
     nb_filter, nb_channel, nb_row, nb_col = W.shape
 
@@ -134,7 +136,7 @@ if __name__ == "__main__":
 
     # モデルのサマリを表示
     model.summary()
-    plot(model, show_shapes=True, to_file='mnist_cnn.png')
+    plot(model, show_shapes=True, to_file='result_mnist/model.png')
 
     # モデルをコンパイル
     model.compile(loss='categorical_crossentropy',
