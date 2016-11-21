@@ -65,7 +65,7 @@ def plot_history(history, outdir):
 if __name__ == '__main__':
     batch_size = 128
     nb_classes = 10
-    nb_epoch = 100
+    nb_epoch = 150
     data_augmentation = False
 
     # 入力画像の次元
@@ -132,7 +132,11 @@ if __name__ == '__main__':
                     verbose=1,
                     validation_split=0.1)
 
-    # TODO: 学習したモデルの保存
+    # 学習したモデルと重みと履歴の保存
+    model_json = model.to_json()
+    with open('result_cifar10/model.json', 'w') as json_file:
+        json_file.write(model_json)
+    model.save_weights('result_cifar10/model.h5')
 
     # 学習履歴をプロット
     plot_history(history, 'result_cifar10')
