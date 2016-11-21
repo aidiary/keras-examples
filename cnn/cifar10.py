@@ -11,6 +11,7 @@ from keras.optimizers import SGD
 from keras.utils import np_utils
 from keras.utils.visualize_util import plot
 
+
 def plot_cifar10(X, y):
     plt.figure()
 
@@ -39,21 +40,23 @@ def plot_cifar10(X, y):
 def plot_history(history):
     # 精度の履歴をプロット
     plt.figure()
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
+    plt.plot(history.history['acc'], marker='.')
+    plt.plot(history.history['val_acc'], marker='.')
     plt.title('model accuracy')
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
+    plt.grid()
     plt.legend(['train', 'test'], loc='upper left')
     plt.savefig('result_cifar10/acc.png')
 
     # 損失の履歴をプロット
     plt.figure()
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
+    plt.plot(history.history['loss'], marker='.')
+    plt.plot(history.history['val_loss'], marker='.')
     plt.title('model loss')
     plt.xlabel('epoch')
     plt.ylabel('loss')
+    plt.grid()
     plt.legend(['train', 'test'], loc='upper left')
     plt.savefig('result_cifar10/loss.png')
 
@@ -120,7 +123,6 @@ if __name__ == '__main__':
     model.summary()
     plot(model, show_shapes=True, to_file='result_cifar10/model.png')
 
-    # TODO: validation_split=0.1にするとlossがまったく下がらない
     if not data_augmentation:
         print('Not using data augmentation')
         history = model.fit(X_train, Y_train,
