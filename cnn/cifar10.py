@@ -4,7 +4,6 @@ from scipy.misc import toimage
 import matplotlib.pyplot as plt
 
 from keras.datasets import cifar10
-from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Convolution2D, MaxPooling2D
@@ -63,10 +62,11 @@ def plot_history(history, outdir):
 
 
 if __name__ == '__main__':
+    result_dir = 'result_cifar10'
+
     batch_size = 128
     nb_classes = 10
     nb_epoch = 100
-    data_augmentation = False
 
     # 入力画像の次元
     img_rows, img_cols = 32, 32
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
     # ランダムに画像をプロット
-    plot_cifar10(X_train, y_train)
+    plot_cifar10(X_train, y_train, result_dir)
 
     # 画素値を0-1に変換
     X_train = X_train.astype('float32')
@@ -122,24 +122,23 @@ if __name__ == '__main__':
 
     # モデルのサマリを表示
     model.summary()
-    plot(model, show_shapes=True, to_file='result_cifar10/model.png')
+    plot(model, show_shapes=True, to_file=os.path.join(result_dir, 'model.png'))
 
-    if not data_augmentation:
-        print('Not using data augmentation')
-        history = model.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    nb_epoch=nb_epoch,
-                    verbose=1,
-                    validation_split=0.1)
+    # 訓練
+    history = model.fit(X_train, Y_train,
+                batch_size=batch_size,
+                nb_epoch=nb_epoch,
+                verbose=1,
+                validation_split=0.1)
 
     # 学習したモデルと重みと履歴の保存
     model_json = model.to_json()
-    with open('result_cifar10/model.json', 'w') as json_file:
+    with open(os.path.join(result_dir, 'model.json'), 'w') as json_file:
         json_file.write(model_json)
-    model.save_weights('result_cifar10/model.h5')
+    model.save_weights(os.path.join(result_dir, 'model.h5'))
 
     # 学習履歴をプロット
-    plot_history(history, 'result_cifar10')
+    plot_history(history, result_dir)
 
     # モデルの評価
     loss, acc = model.evaluate(X_test, Y_test, verbose=0)
