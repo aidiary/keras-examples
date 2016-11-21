@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -43,26 +44,28 @@ def build_cnn(input_shape, nb_filters, filter_size, pool_size):
     return model
 
 
-def plot_history(history):
-    # print(history.history.keys())
-
+def plot_history(history, outdir):
     # 精度の履歴をプロット
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
+    plt.figure()
+    plt.plot(history.history['acc'], marker='.')
+    plt.plot(history.history['val_acc'], marker='.')
     plt.title('model accuracy')
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
+    plt.grid()
     plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
+    plt.savefig(os.path.join(outdir, 'acc.png'))
 
     # 損失の履歴をプロット
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
+    plt.figure()
+    plt.plot(history.history['loss'], marker='.')
+    plt.plot(history.history['val_loss'], marker='.')
     plt.title('model loss')
     plt.xlabel('epoch')
     plt.ylabel('loss')
+    plt.grid()
     plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
+    plt.savefig(os.path.join(outdir, 'loss.png'))
 
 
 def visualize_filter(model):
@@ -161,7 +164,7 @@ if __name__ == "__main__":
     visualize_filter(model)
 
     # 学習履歴をプロット
-    plot_history(history)
+    plot_history(history, 'result_mnist')
 
     # モデルの評価
     loss, acc = model.evaluate(X_test, Y_test, verbose=0)

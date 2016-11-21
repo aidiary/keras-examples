@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from scipy.misc import toimage
 import matplotlib.pyplot as plt
@@ -37,7 +38,7 @@ def plot_cifar10(X, y):
     plt.savefig('result_cifar10/plot.png')
 
 
-def plot_history(history):
+def plot_history(history, outdir):
     # 精度の履歴をプロット
     plt.figure()
     plt.plot(history.history['acc'], marker='.')
@@ -47,7 +48,7 @@ def plot_history(history):
     plt.ylabel('accuracy')
     plt.grid()
     plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig('result_cifar10/acc.png')
+    plt.savefig(os.path.join(outdir, 'acc.png'))
 
     # 損失の履歴をプロット
     plt.figure()
@@ -58,7 +59,7 @@ def plot_history(history):
     plt.ylabel('loss')
     plt.grid()
     plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig('result_cifar10/loss.png')
+    plt.savefig(os.path.join(outdir, 'loss.png'))
 
 
 if __name__ == '__main__':
@@ -134,7 +135,7 @@ if __name__ == '__main__':
     # TODO: 学習したモデルの保存
 
     # 学習履歴をプロット
-    plot_history(history)
+    plot_history(history, 'result_cifar10')
 
     # モデルの評価
     loss, acc = model.evaluate(X_test, Y_test, verbose=0)
