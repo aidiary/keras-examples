@@ -63,6 +63,8 @@ def plot_history(history, outdir):
 
 if __name__ == '__main__':
     result_dir = 'result_cifar10'
+    if not os.path.exists(result_dir):
+        os.mkdir(result_dir)
 
     batch_size = 128
     nb_classes = 10
