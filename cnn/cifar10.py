@@ -65,7 +65,7 @@ def plot_history(history, outdir):
 if __name__ == '__main__':
     batch_size = 128
     nb_classes = 10
-    nb_epoch = 150
+    nb_epoch = 100
     data_augmentation = False
 
     # 入力画像の次元
