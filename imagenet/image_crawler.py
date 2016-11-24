@@ -63,7 +63,7 @@ if __name__ == '__main__':
         print("*** wnid = %s (%s)" % (wnid, category))
 
         # すでに画像ディレクトリがあったら収集済みなのでスキップする
-        if os.path.exists(os.path.join(OUTPUT_DIR, category)):
+        if os.path.exists(os.path.join(OUTPUT_DIR, wnid)):
             print("SKIP")
             continue
 
@@ -76,14 +76,17 @@ if __name__ == '__main__':
         image_url_list = page.rstrip().split('\r\n')
         random.shuffle(image_url_list)
 
-        os.mkdir(os.path.join(OUTPUT_DIR, category))
+        os.mkdir(os.path.join(OUTPUT_DIR, wnid))
 
         num_ok = 0
         for image_url in image_url_list:
-            print("%s ... " % image_url)
+            try:
+                print("%s ... " % image_url)
+            except Exception:
+                continue
 
             filename = image_url.split('/')[-1]
-            ret = download_image(image_url, os.path.join(OUTPUT_DIR, category, filename))
+            ret = download_image(image_url, os.path.join(OUTPUT_DIR, wnid, filename))
 
             if ret:
                 print("OK")
