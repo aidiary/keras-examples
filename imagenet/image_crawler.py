@@ -62,6 +62,11 @@ if __name__ == '__main__':
         category = wnid2cat[wnid]
         print("*** wnid = %s (%s)" % (wnid, category))
 
+        # すでに画像ディレクトリがあったら収集済みなのでスキップする
+        if os.path.exists(os.path.join(OUTPUT_DIR, category)):
+            print("SKIP")
+            continue
+
         r = requests.get(IMAGE_URL_API + wnid)
         if not r.ok:
             print("WARNING: cannot get image list: wnid = %s" % wnid)
