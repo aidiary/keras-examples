@@ -1,17 +1,39 @@
-import urllib.request
+import os
+import time
+import requests
 
 IMAGE_URL_API = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid='
 
 OUTPUT_DIR = "images"
 
+def download_image(url, filename):
+    try:
+        r = requests.get(url)
+    except Exception:
+        return False
+
+    if not r.ok:
+        return False
+
+    with open(filename, 'wb') as fp:
+        fp.write(r.content)
+
+    return True
+
+
 if __name__ == '__main__':
+    if not os.path.exists(OUTPUT_DIR):
+        os.mkdir(OUTPUT_DIR)
+
     # カテゴリ => WordNet IDの辞書を作成
     cat2wnid = dict()
+    wnid2cat = dict()
     with open('words.txt', 'r') as fp:
         for line in fp.readlines():
             line = line.rstrip()
             wnid, category = line.split('\t')
             cat2wnid[category] = wnid
+            wnid2cat[wnid] = category
 
     # 画像を収集したいカテゴリのリストを読み込む
     # ISVRC2014の1000カテゴリ
@@ -29,8 +51,25 @@ if __name__ == '__main__':
 
     # 各カテゴリについて画像を収集
     for wnid in target_wnid:
-        with urllib.request.urlopen(IMAGE_URL_API + wnid) as res:
-            page = res.read().decode('utf-8').rstrip()
-            image_url_list = page.split('\r\n')
-            print(image_url_list)
-        exit()
+        print("*** wnid = %s (%s)" % (wnid, wnid2cat[wnid]))
+        r = requests.get(IMAGE_URL_API + wnid)
+        if not r.ok:
+            print("WARNING: cannot get image list: wnid = %s" % wnid)
+            continue
+
+        page = r.text
+        image_url_list = page.rstrip().split('\r\n')
+
+        for image_url in image_url_list:
+            print("%s ... " % image_url, end="")
+
+            filename = image_url.split('/')[-1]
+            ret = download_image(image_url, os.path.join(OUTPUT_DIR, filename))
+
+            if ret == True:
+                print("OK")
+            else:
+                print("NG")
+
+            # 同じドメインが連続する場合もあるので適宜スリープ
+            time.sleep(3)
