@@ -5,6 +5,7 @@ import requests
 IMAGE_URL_API = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid='
 
 OUTPUT_DIR = "images"
+MAX_NUM_IMAGES_PER_CATEGORY = 1
 
 def download_image(url, filename):
     try:
@@ -60,6 +61,7 @@ if __name__ == '__main__':
         page = r.text
         image_url_list = page.rstrip().split('\r\n')
 
+        num_ok = 0
         for image_url in image_url_list:
             print("%s ... " % image_url, end="")
 
@@ -68,6 +70,9 @@ if __name__ == '__main__':
 
             if ret == True:
                 print("OK")
+                num_ok += 1
+                if num_ok == MAX_NUM_IMAGES_PER_CATEGORY:
+                    break
             else:
                 print("NG")
 
