@@ -78,7 +78,7 @@ if __name__ == '__main__':
             print("%s ... " % image_url)
 
             filename = image_url.split('/')[-1]
-            ret = download_image(image_url, os.path.join(OUTPUT_DIR, filename))
+            ret = download_image(image_url, os.path.join(OUTPUT_DIR, category, filename))
 
             if ret:
                 print("OK")
