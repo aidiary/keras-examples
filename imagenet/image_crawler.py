@@ -1,6 +1,7 @@
 import os
 import time
 import random
+import imghdr
 import requests
 
 IMAGE_URL_API = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid='
@@ -16,6 +17,11 @@ def download_image(url, filename):
         return False
 
     if not r.ok:
+        return False
+
+    imagetype = imghdr.what(None, h=r.content)
+    print(imagetype)
+    if imagetype != "jpeg":
         return False
 
     with open(filename, 'wb') as fp:
@@ -82,19 +88,19 @@ if __name__ == '__main__':
         for image_url in image_url_list:
             try:
                 print("%s ... " % image_url)
+
+                filename = image_url.split('/')[-1]
+                ret = download_image(image_url, os.path.join(OUTPUT_DIR, wnid, filename))
+
+                if ret:
+                    print("OK")
+                    num_ok += 1
+                    if num_ok == MAX_NUM_IMAGES_PER_CATEGORY:
+                        break
+                else:
+                    print("NG")
+
+                # 同じドメインが連続する場合もあるので適宜スリープ
+                time.sleep(3)
             except Exception:
                 continue
-
-            filename = image_url.split('/')[-1]
-            ret = download_image(image_url, os.path.join(OUTPUT_DIR, wnid, filename))
-
-            if ret:
-                print("OK")
-                num_ok += 1
-                if num_ok == MAX_NUM_IMAGES_PER_CATEGORY:
-                    break
-            else:
-                print("NG")
-
-            # 同じドメインが連続する場合もあるので適宜スリープ
-            time.sleep(3)
