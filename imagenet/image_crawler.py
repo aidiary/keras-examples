@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import random
 import imghdr
 import requests
@@ -20,7 +21,6 @@ def download_image(url, filename):
         return False
 
     imagetype = imghdr.what(None, h=r.content)
-    print(imagetype)
     if imagetype != "jpeg":
         return False
 
@@ -39,40 +39,23 @@ if __name__ == '__main__':
     if not os.path.exists(OUTPUT_DIR):
         os.mkdir(OUTPUT_DIR)
 
-    # カテゴリ => WordNet IDの辞書を作成
-    cat2wnid = dict()
-    wnid2cat = dict()
-    with open('words.txt', 'r') as fp:
-        for line in fp.readlines():
-            line = line.rstrip()
-            wnid, category = line.split('\t')
-            cat2wnid[category] = wnid
-            wnid2cat[wnid] = category
-
     # 画像を収集したいカテゴリのリストを読み込む
     # ISVRC2014の1000カテゴリ
     # http://image-net.org/challenges/LSVRC/2014/browse-synsets
-    target_categories = []
-    with open('class1000.txt', 'r') as fp:
-        for line in fp.readlines():
-            line = line.rstrip()
-            target_categories.append(line)
-
-    # カテゴリのリストをWordNet IDのリストに変換
-    target_wnid = []
-    for cat in target_categories:
-        target_wnid.append(cat2wnid[cat])
+    # https://github.com/fchollet/keras/blob/master/keras/applications/imagenet_utils.py
+    with open('imagenet_class_index.json', 'r') as fp:
+        class_list = json.load(fp)
 
     # 各カテゴリについて画像を収集
-    for wnid in target_wnid:
-        category = wnid2cat[wnid]
-        print("*** wnid = %s (%s)" % (wnid, category))
+    for wnid, category in class_list.values():
+        print("*** category = %s (%s)" % (category, wnid))
 
         # すでに画像ディレクトリがあったら収集済みなのでスキップする
-        if os.path.exists(os.path.join(OUTPUT_DIR, wnid)):
+        if os.path.exists(os.path.join(OUTPUT_DIR, category)):
             print("SKIP")
             continue
 
+        # wnidに属する画像のURLリストをAPIで取得する
         r = requests.get(IMAGE_URL_API + wnid)
         if not r.ok:
             print("WARNING: cannot get image list: wnid = %s" % wnid)
@@ -82,15 +65,15 @@ if __name__ == '__main__':
         image_url_list = page.rstrip().split('\r\n')
         random.shuffle(image_url_list)
 
-        os.mkdir(os.path.join(OUTPUT_DIR, wnid))
+        os.mkdir(os.path.join(OUTPUT_DIR, category))
 
         num_ok = 0
         for image_url in image_url_list:
             try:
-                print("%s ... " % image_url)
+                print("%s ... " % image_url, end='')
 
                 filename = image_url.split('/')[-1]
-                ret = download_image(image_url, os.path.join(OUTPUT_DIR, wnid, filename))
+                ret = download_image(image_url, os.path.join(OUTPUT_DIR, category, filename))
 
                 if ret:
                     print("OK")
