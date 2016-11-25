@@ -128,10 +128,10 @@ if __name__ == '__main__':
 
     # 訓練
     history = model.fit(X_train, Y_train,
-                batch_size=batch_size,
-                nb_epoch=nb_epoch,
-                verbose=1,
-                validation_split=0.1)
+                        batch_size=batch_size,
+                        nb_epoch=nb_epoch,
+                        verbose=1,
+                        validation_split=0.1)
 
     # 学習したモデルと重みと履歴の保存
     model_json = model.to_json()

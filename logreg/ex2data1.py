@@ -9,6 +9,7 @@ from keras.layers.core import Dense, Activation
 
 """2クラスロジスティック回帰"""
 
+
 def plot_data(X, t):
     # ラベル1を正例、ラベル0を負例とする
     positive = [i for i in range(len(t)) if t[i] == 1]
@@ -16,6 +17,7 @@ def plot_data(X, t):
 
     plt.scatter(X[positive, 0], X[positive, 1], c='red', marker='o', label='positive')
     plt.scatter(X[negative, 0], X[negative, 1], c='blue', marker='o', label='negative')
+
 
 if __name__ == '__main__':
     # 結果を再現できるように乱数の種を固定

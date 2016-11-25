@@ -13,6 +13,7 @@ from keras.utils.visualize_util import plot
 # 参考
 # https://github.com/fchollet/keras/blob/master/examples/mnist_mlp.py
 
+
 def build_multilayer_perceptron():
     model = Sequential()
 
@@ -26,6 +27,7 @@ def build_multilayer_perceptron():
     model.add(Activation('softmax'))
 
     return model
+
 
 def plot_history(history):
     # print(history.history.keys())
@@ -49,6 +51,7 @@ def plot_history(history):
     plt.grid()
     plt.legend(['loss', 'val_loss'], loc='lower right')
     plt.show()
+
 
 if __name__ == "__main__":
     batch_size = 128

@@ -17,6 +17,7 @@ from sklearn.preprocessing import MinMaxScaler
 # MNISTの数字分類
 # 参考: https://github.com/fchollet/keras/blob/master/examples/mnist_cnn.py
 
+
 def build_cnn(input_shape, nb_filters, filter_size, pool_size):
     model = Sequential()
 
@@ -154,11 +155,11 @@ if __name__ == "__main__":
 
     # モデルの訓練
     history = model.fit(X_train, Y_train,
-                       batch_size=batch_size,
-                       nb_epoch=nb_epoch,
-                       verbose=1,
-                       validation_split=0.1,
-                       callbacks=[early_stopping])
+                        batch_size=batch_size,
+                        nb_epoch=nb_epoch,
+                        verbose=1,
+                        validation_split=0.1,
+                        callbacks=[early_stopping])
 
     # 学習後の1層目のフィルタを可視化
     visualize_filter(model)

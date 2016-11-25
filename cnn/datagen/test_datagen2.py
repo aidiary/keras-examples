@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from keras.datasets import cifar10
 from keras.preprocessing.image import ImageDataGenerator
 
+
 def draw(X, filename):
     plt.figure()
     pos = 1
@@ -16,6 +17,7 @@ def draw(X, filename):
         plt.axis('off')
         pos += 1
     plt.savefig(filename)
+
 
 if __name__ == '__main__':
     img_rows, img_cols, img_channels = 32, 32, 3

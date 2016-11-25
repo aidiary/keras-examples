@@ -8,6 +8,7 @@ from keras.layers.core import Dense, Activation
 from keras.utils import np_utils
 from sklearn import preprocessing
 
+
 def build_multilayer_perceptron():
     """多層パーセプトロンモデルを構築"""
     model = Sequential()
@@ -16,6 +17,7 @@ def build_multilayer_perceptron():
     model.add(Dense(3))
     model.add(Activation('softmax'))
     return model
+
 
 if __name__ == "__main__":
     # Irisデータをロード
