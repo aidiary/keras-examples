@@ -7,11 +7,11 @@ model.summary()
 
 img = image.load_img('elephant.jpg', target_size=(224, 224))
 x = image.img_to_array(img)
-print(x)
-print(x.shape)
 
 x = np.expand_dims(x, axis=0)
-print(x.shape)
 
 preds = model.predict(preprocess_input(x))
-print(preds.shape)
+results = decode_predictions(preds)[0]
+
+for result in results:
+    print(result)
