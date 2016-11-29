@@ -6,41 +6,68 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
-OUT_DIR = "preview"
 IMAGE_FILE = "../../vgg16/elephant.jpg"
 
-datagen = ImageDataGenerator(rotation_range=180)
 
-# 画像をロード（PIL形式画像）
-img = load_img(IMAGE_FILE)
+def draw_images(datagen, x, result_images):
+    # 出力先ディレクトリを作成
+    temp_dir = "temp"
+    os.mkdir(temp_dir)
 
-# numpy arrayに変換（row, col, channel)
-x = img_to_array(img)
-# print(x.shape)
+    # generatorから9個の画像を生成
+    # xは1サンプルのみなのでbatch_sizeは1で固定
+    g = datagen.flow(x, batch_size=1, save_to_dir=temp_dir, save_prefix='img', save_format='jpg')
+    for i in range(9):
+        batch = g.next()
 
-# 4次元テンソルに変換（sample, row, col, channel)
-x = np.expand_dims(x, axis=0)
-# print(x.shape)
+    # 生成した画像を3x3で描画
+    images = glob.glob(os.path.join(temp_dir, "*.jpg"))
+    fig = plt.figure()
+    gs = gridspec.GridSpec(3, 3)
+    gs.update(wspace=0.1, hspace=0.1)
+    for i in range(9):
+        img = load_img(images[i])
+        plt.subplot(gs[i])
+        plt.imshow(img, aspect='auto')
+        plt.axis("off")
+    plt.savefig(result_images)
 
-if os.path.exists(OUT_DIR):
-    shutil.rmtree(OUT_DIR)
+    # 出力先ディレクトリを削除
+    shutil.rmtree(temp_dir)
 
-os.mkdir(OUT_DIR)
 
-# xは1サンプルのみなのでbatch_sizeは1で固定
-g = datagen.flow(x, batch_size=1, save_to_dir=OUT_DIR, save_prefix='img', save_format='jpg')
-for i in range(10):
-    batch = g.next()
-    # print(batch.shape)
+if __name__ == '__main__':
+    # 画像をロード（PIL形式画像）
+    img = load_img(IMAGE_FILE)
 
-images = glob.glob(os.path.join(OUT_DIR, "*.jpg"))
+    # numpy arrayに変換（row, col, channel)
+    x = img_to_array(img)
+    # print(x.shape)
 
-fig = plt.figure()
-gs = gridspec.GridSpec(2, 5)
-gs.update(wspace=0.1, hspace=0.1)
-for i in range(10):
-    img = load_img(images[i])
-    plt.subplot(gs[i])
-    plt.imshow(img)
-    plt.axis("off")
-plt.show()
+    # 4次元テンソルに変換（sample, row, col, channel)
+    x = np.expand_dims(x, axis=0)
+    # print(x.shape)
+
+    datagen = ImageDataGenerator(rotation_range=90)
+    draw_images(datagen, x, "result_rotation.jpg")
+
+    datagen = ImageDataGenerator(width_shift_range=0.2)
+    draw_images(datagen, x, "result_width_shift.jpg")
+
+    datagen = ImageDataGenerator(height_shift_range=0.2)
+    draw_images(datagen, x, "result_height_shift.jpg")
+
+    datagen = ImageDataGenerator(shear_range=0.78)  # pi/4
+    draw_images(datagen, x, "result_shear.jpg")
+
+    datagen = ImageDataGenerator(zoom_range=0.5)
+    draw_images(datagen, x, "result_zoom.jpg")
+
+    datagen = ImageDataGenerator(channel_shift_range=100)
+    draw_images(datagen, x, "result_channel_shift.jpg")
+
+    datagen = ImageDataGenerator(samplewise_center=True)
+    draw_images(datagen, x, "result_samplewise_center.jpg")
+
+    datagen = ImageDataGenerator(samplewise_std_normalization=True)
+    draw_images(datagen, x, "result_samplewise_std_normalization.jpg")
