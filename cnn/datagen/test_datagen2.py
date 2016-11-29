@@ -30,21 +30,16 @@ if __name__ == '__main__':
     # 画素値を0-1に変換
     X_train = X_train.astype('float32')
     X_train /= 255.0
-    X_train = X_train[0:batch_size]
-    y_train = y_train[0:batch_size]
 
-    draw(X_train, 'datagen_before.png')
+    draw(X_train[0:batch_size], 'zca_whitening_before.png')
 
     # データ拡張
-    datagen = ImageDataGenerator(
-        rotation_range=90,
-        zca_whitening=True
-    )
+    datagen = ImageDataGenerator(zca_whitening=True)
 
     datagen.fit(X_train)
     g = datagen.flow(X_train, y_train, batch_size, shuffle=False)
-    batch = g.next()
-    print(batch[0].shape)
-    print(batch[1].shape)
+    X_batch, y_batch = g.next()
+    print(X_batch.shape)
+    print(y_batch.shape)
 
-    draw(batch[0], 'datagen_after.png')
+    draw(X_batch, 'zca_whitening_after.png')
