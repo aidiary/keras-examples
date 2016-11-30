@@ -10,9 +10,10 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras.optimizers import SGD
 from keras.utils import np_utils
 from keras.utils.visualize_util import plot
+from keras.preprocessing.image import ImageDataGenerator
 
 
-def plot_cifar10(X, y):
+def plot_cifar10(X, y, result_dir):
     plt.figure()
 
     # 画像を描画
@@ -34,10 +35,10 @@ def plot_cifar10(X, y):
             plt.axis('off')
             pos += 1
 
-    plt.savefig('result_cifar10/plot.png')
+    plt.savefig(os.path.join(result_dir, 'plot.png'))
 
 
-def plot_history(history, outdir):
+def plot_history(history, result_dir):
     # 精度の履歴をプロット
     plt.figure()
     plt.plot(history.history['acc'], marker='.')
@@ -46,8 +47,9 @@ def plot_history(history, outdir):
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
     plt.grid()
+    plt.ylim((0.0, 1.0))
     plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig(os.path.join(outdir, 'acc.png'))
+    plt.savefig(os.path.join(result_dir, 'acc.png'))
 
     # 損失の履歴をプロット
     plt.figure()
@@ -58,7 +60,7 @@ def plot_history(history, outdir):
     plt.ylabel('loss')
     plt.grid()
     plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig(os.path.join(outdir, 'loss.png'))
+    plt.savefig(os.path.join(result_dir, 'loss.png'))
 
 
 if __name__ == '__main__':
@@ -68,7 +70,10 @@ if __name__ == '__main__':
 
     batch_size = 128
     nb_classes = 10
-    nb_epoch = 100
+    nb_epoch = 3
+
+    # データ拡張を使うか？
+    data_augmentation = False
 
     # 入力画像の次元
     img_rows, img_cols = 32, 32
@@ -127,11 +132,40 @@ if __name__ == '__main__':
     plot(model, show_shapes=True, to_file=os.path.join(result_dir, 'model.png'))
 
     # 訓練
-    history = model.fit(X_train, Y_train,
-                        batch_size=batch_size,
-                        nb_epoch=nb_epoch,
-                        verbose=1,
-                        validation_split=0.1)
+    if not data_augmentation:
+        print('Not using data augmentation')
+        history = model.fit(X_train, Y_train,
+                            batch_size=batch_size,
+                            nb_epoch=nb_epoch,
+                            verbose=1,
+                            validation_data=(X_test, Y_test),
+                            shuffle=True)
+    else:
+        print('Using real-time data augmentation')
+
+        datagen = ImageDataGenerator(
+            featurewise_center=False,
+            samplewise_center=False,
+            featurewise_std_normalization=False,
+            samplewise_std_normalization=False,
+            zca_whitening=False,
+            rotation_range=0,
+            width_shift_range=0.1,
+            height_shift_range=0.1,
+            horizontal_flip=True,
+            vertical_flip=False)
+
+        # featurewiseやZCA白色化を有効にしたときに必要な情報（std, mean, PCなど）を計算
+        datagen.fit(X_train)
+
+        # 訓練データを生成するジェネレータ
+        train_generator = datagen.flow(X_train, Y_train, batch_size=batch_size)
+
+        # ジェネレータから生成される画像を使って学習
+        model.fit_generator(train_generator,
+                            samples_per_epoch=X_train.shape[0],
+                            nb_epoch=nb_epoch,
+                            validation_data=(X_test, Y_test))
 
     # 学習したモデルと重みと履歴の保存
     model_json = model.to_json()
