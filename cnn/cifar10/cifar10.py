@@ -64,13 +64,13 @@ def plot_history(history, result_dir):
 
 
 if __name__ == '__main__':
-    result_dir = 'result_cifar10'
+    result_dir = 'result'
     if not os.path.exists(result_dir):
         os.mkdir(result_dir)
 
     batch_size = 128
     nb_classes = 10
-    nb_epoch = 3
+    nb_epoch = 100
 
     # データ拡張を使うか？
     data_augmentation = False
