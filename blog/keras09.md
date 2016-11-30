@@ -1,7 +1,7 @@
 Kerasによるデータ拡張
 2016/11/29
 
-今回は、画像認識の精度向上に有効な**データ拡張（Data Augmentation）**を実験してみた。データ拡張は、訓練データの画像に対して移動、回転、拡大・縮小などを人工的な操作を加えることでデータ数を水増しするテクニック。画像の移動、回転、拡大・縮小に対してロバストになるため認識精度が向上するようだ。音声認識でも訓練音声に人工的なノイズを上乗せしてデータを拡張して学習するというテクニックを聞いたことがあるのでそれの画像版みたいなものだろう。
+今回は、画像認識の精度向上に有効な **データ拡張（Data Augmentation）** を実験してみた。データ拡張は、訓練データの画像に対して移動、回転、拡大・縮小などを人工的な操作を加えることでデータ数を水増しするテクニック。画像の移動、回転、拡大・縮小に対してロバストになるため認識精度が向上するようだ。音声認識でも訓練音声に人工的なノイズを上乗せしてデータを拡張して学習するというテクニックを聞いたことがあるのでそれの画像版みたいなものだろう。
 
 Kerasには画像データの拡張を簡単に行う`ImageDataGenerator`というクラスが用意されている。今回は、この使い方をまとめておきたい。
 
@@ -81,7 +81,7 @@ def draw_images(datagen, x, result_images):
     shutil.rmtree(temp_dir)
 ```
 
-というわけで早速やってみよう。
+早速やってみよう。入力画像はなんでもいいけど下のを入れた。
 
 ## rotation_range
 
@@ -129,4 +129,62 @@ draw_images(datagen, x, "result_zoom.jpg")
 ```python
 datagen = ImageDataGenerator(channel_shift_range=100)
 draw_images(datagen, x, "result_channel_shift.jpg")
+```
+
+## horizontal_flip
+
+```python
+datagen = ImageDataGenerator(horizontal_flip=True)
+draw_images(datagen, x, "result_horizontal_flip.jpg")
+```
+
+## vertical_flip
+
+```python
+datagen = ImageDataGenerator(vertical_flip=True)
+draw_images(datagen, x, "result_vertical_flip.jpg")
+```
+
+## samplewise_center
+
+```python
+datagen = ImageDataGenerator(samplewise_center=True)
+draw_images(datagen, x, "result_samplewise_center.jpg")
+```
+
+## samplewise_std_normalization
+
+```python
+datagen = ImageDataGenerator(samplewise_std_normalization=True)
+draw_images(datagen, x, "result_samplewise_std_normalization.jpg")
+```
+
+# ZCA白色化
+
+
+```python
+if __name__ == '__main__':
+    img_rows, img_cols, img_channels = 32, 32, 3
+    batch_size = 16
+    nb_classes = 10
+
+    # CIFAR-10データをロード
+    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+
+    # 画素値を0-1に変換
+    X_train = X_train.astype('float32')
+    X_train /= 255.0
+
+    draw(X_train[0:batch_size], 'original.png')
+
+    # データ拡張
+    datagen = ImageDataGenerator(zca_whitening=True)
+
+    datagen.fit(X_train)
+    g = datagen.flow(X_train, y_train, batch_size, shuffle=False)
+    X_batch, y_batch = g.next()
+    # print(X_batch.shape)
+    # print(y_batch.shape)
+
+    draw(X_batch, 'result_zca_whitening.png')
 ```
