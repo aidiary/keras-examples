@@ -66,6 +66,12 @@ if __name__ == '__main__':
     datagen = ImageDataGenerator(channel_shift_range=100)
     draw_images(datagen, x, "result_channel_shift.jpg")
 
+    datagen = ImageDataGenerator(horizontal_flip=True)
+    draw_images(datagen, x, "result_horizontal_flip.jpg")
+
+    datagen = ImageDataGenerator(vertical_flip=True)
+    draw_images(datagen, x, "result_vertical_flip.jpg")
+
     datagen = ImageDataGenerator(samplewise_center=True)
     draw_images(datagen, x, "result_samplewise_center.jpg")
 
