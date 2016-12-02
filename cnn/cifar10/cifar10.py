@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     batch_size = 128
     nb_classes = 10
-    nb_epoch = 100
+    nb_epoch = 50
 
     # データ拡張を使うか？
     data_augmentation = False
@@ -162,10 +162,10 @@ if __name__ == '__main__':
         train_generator = datagen.flow(X_train, Y_train, batch_size=batch_size)
 
         # ジェネレータから生成される画像を使って学習
-        model.fit_generator(train_generator,
-                            samples_per_epoch=X_train.shape[0],
-                            nb_epoch=nb_epoch,
-                            validation_data=(X_test, Y_test))
+        history = model.fit_generator(train_generator,
+                                      samples_per_epoch=X_train.shape[0],
+                                      nb_epoch=nb_epoch,
+                                      validation_data=(X_test, Y_test))
 
     # 学習したモデルと重みと履歴の保存
     model_json = model.to_json()
