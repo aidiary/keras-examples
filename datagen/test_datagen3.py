@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
-IMAGE_FILE = "../../vgg16/elephant.jpg"
+IMAGE_FILE = "../vgg16/elephant.jpg"
 
 
 def draw_images(datagen, x, result_images):
