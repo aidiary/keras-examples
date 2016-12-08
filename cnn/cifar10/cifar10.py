@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 from scipy.misc import toimage
 import matplotlib.pyplot as plt
@@ -38,42 +39,36 @@ def plot_cifar10(X, y, result_dir):
     plt.savefig(os.path.join(result_dir, 'plot.png'))
 
 
-def plot_history(history, result_dir):
-    # 精度の履歴をプロット
-    plt.figure()
-    plt.plot(history.history['acc'], marker='.')
-    plt.plot(history.history['val_acc'], marker='.')
-    plt.title('model accuracy')
-    plt.xlabel('epoch')
-    plt.ylabel('accuracy')
-    plt.grid()
-    plt.ylim((0.0, 1.0))
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig(os.path.join(result_dir, 'acc.png'))
+def save_history(history, result_file):
+    loss = history.history['loss']
+    acc = history.history['acc']
+    val_loss = history.history['val_loss']
+    val_acc = history.history['val_acc']
+    nb_epoch = len(acc)
 
-    # 損失の履歴をプロット
-    plt.figure()
-    plt.plot(history.history['loss'], marker='.')
-    plt.plot(history.history['val_loss'], marker='.')
-    plt.title('model loss')
-    plt.xlabel('epoch')
-    plt.ylabel('loss')
-    plt.grid()
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig(os.path.join(result_dir, 'loss.png'))
+    with open(result_file, "w") as fp:
+        fp.write("epoch\tloss\tacc\tval_loss\tval_acc\n")
+        for i in range(nb_epoch):
+            fp.write("%d\t%f\t%f\t%f\t%f\n" % (i, loss[i], acc[i], val_loss[i], val_acc[i]))
 
 
 if __name__ == '__main__':
-    result_dir = 'result'
+    if len(sys.argv) != 4:
+        print("usage: python cifar10.py [nb_epoch] [use_data_augmentation (True or False)] [result_dir]")
+        exit(1)
+
+    nb_epoch = int(sys.argv[1])
+    data_augmentation = True if sys.argv[2] == "True" else False
+    result_dir = sys.argv[3]
     if not os.path.exists(result_dir):
         os.mkdir(result_dir)
 
+    print("nb_epoch:", nb_epoch)
+    print("data_augmentation:", data_augmentation)
+    print("result_dir:", result_dir)
+
     batch_size = 128
     nb_classes = 10
-    nb_epoch = 50
-
-    # データ拡張を使うか？
-    data_augmentation = False
 
     # 入力画像の次元
     img_rows, img_cols = 32, 32
@@ -143,40 +138,40 @@ if __name__ == '__main__':
     else:
         print('Using real-time data augmentation')
 
-        datagen = ImageDataGenerator(
-            featurewise_center=False,
-            samplewise_center=False,
-            featurewise_std_normalization=False,
-            samplewise_std_normalization=False,
-            zca_whitening=False,
-            rotation_range=0,
-            width_shift_range=0.1,
-            height_shift_range=0.1,
-            horizontal_flip=True,
-            vertical_flip=False)
-
-        # featurewiseやZCA白色化を有効にしたときに必要な情報（std, mean, PCなど）を計算
-        datagen.fit(X_train)
-
         # 訓練データを生成するジェネレータ
-        train_generator = datagen.flow(X_train, Y_train, batch_size=batch_size)
+        train_datagen = ImageDataGenerator(zca_whitening=True, width_shift_range=0.1, height_shift_range=0.1)
+        train_datagen.fit(X_train)
+        train_generator = train_datagen.flow(X_train, Y_train, batch_size=batch_size)
+
+        # テストデータを生成するジェネレータ
+        # 画像のランダムシフトは必要ない？
+        test_datagen = ImageDataGenerator(zca_whitening=True)
+        test_datagen.fit(X_test)
+        test_generator = test_datagen.flow(X_test, Y_test)
 
         # ジェネレータから生成される画像を使って学習
+        # 本来は好ましくないがテストデータをバリデーションデータとして使う
+        # validation_dataにジェネレータを使うときはnb_val_samplesを指定する必要あり
+        # TODO: 毎エポックで生成するのは無駄か？
         history = model.fit_generator(train_generator,
                                       samples_per_epoch=X_train.shape[0],
                                       nb_epoch=nb_epoch,
-                                      validation_data=(X_test, Y_test))
+                                      validation_data=test_generator,
+                                      nb_val_samples=X_test.shape[0])
 
     # 学習したモデルと重みと履歴の保存
     model_json = model.to_json()
     with open(os.path.join(result_dir, 'model.json'), 'w') as json_file:
         json_file.write(model_json)
     model.save_weights(os.path.join(result_dir, 'model.h5'))
-
-    # 学習履歴をプロット
-    plot_history(history, result_dir)
+    save_history(history, os.path.join(result_dir, 'history.txt'))
 
     # モデルの評価
-    loss, acc = model.evaluate(X_test, Y_test, verbose=0)
+    # 学習は白色化した画像を使ったので評価でも白色化したデータで評価する
+    if not data_augmentation:
+        loss, acc = model.evaluate(X_test, Y_test, verbose=0)
+    else:
+        loss, acc = model.evaluate_generator(test_generator, val_samples=X_test.shape[0])
+
     print('Test loss:', loss)
     print('Test acc:', acc)
