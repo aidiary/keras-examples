@@ -21,7 +21,7 @@ def save_history(history, result_file):
 
 
 if __name__ == '__main__':
-    nb_epoch = 5
+    nb_epoch = 200
     result_dir = 'result'
 
     print('nb_epoch:', nb_epoch)
@@ -75,7 +75,8 @@ if __name__ == '__main__':
     model.summary()
     plot(model, show_shapes=True, to_file=os.path.join(result_dir, 'model.png'))
 
-    os.mkdir('train_gen')
+    if not os.path.exists('train_gen'):
+        os.mkdir('train_gen')
 
     # ディレクトリの画像を使ったジェネレータ
     # データ拡張は行わない
@@ -87,9 +88,9 @@ if __name__ == '__main__':
         classes=classes,
         class_mode='categorical',
         batch_size=32,
-        shuffle=True,
-        save_to_dir='train_gen',
-        save_format='jpg')
+        shuffle=True)
+        # save_to_dir='train_gen',
+        # save_format='jpg')
 
     test_datagen = ImageDataGenerator()
     test_generator = test_datagen.flow_from_directory(
