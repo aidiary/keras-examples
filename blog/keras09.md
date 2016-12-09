@@ -103,12 +103,16 @@ datagen = ImageDataGenerator(width_shift_range=0.2)
 draw_images(datagen, x, "result_width_shift.jpg")
 ```
 
+【画像】
+
 ## height_shift_range
 
 ```python
 datagen = ImageDataGenerator(height_shift_range=0.2)
 draw_images(datagen, x, "result_height_shift.jpg")
 ```
+
+【画像】
 
 ## shear_range
 
@@ -117,6 +121,8 @@ datagen = ImageDataGenerator(shear_range=0.78)  # pi/4
 draw_images(datagen, x, "result_shear.jpg")
 ```
 
+【画像】
+
 ## zoom_range
 
 ```python
@@ -124,12 +130,15 @@ datagen = ImageDataGenerator(zoom_range=0.5)
 draw_images(datagen, x, "result_zoom.jpg")
 ```
 
+【画像】
+
 ## channel_shift_range
 
 ```python
 datagen = ImageDataGenerator(channel_shift_range=100)
 draw_images(datagen, x, "result_channel_shift.jpg")
 ```
+【画像】
 
 ## horizontal_flip
 
@@ -137,6 +146,7 @@ draw_images(datagen, x, "result_channel_shift.jpg")
 datagen = ImageDataGenerator(horizontal_flip=True)
 draw_images(datagen, x, "result_horizontal_flip.jpg")
 ```
+【画像】
 
 ## vertical_flip
 
@@ -144,6 +154,7 @@ draw_images(datagen, x, "result_horizontal_flip.jpg")
 datagen = ImageDataGenerator(vertical_flip=True)
 draw_images(datagen, x, "result_vertical_flip.jpg")
 ```
+【画像】
 
 ## samplewise_center
 
@@ -152,6 +163,8 @@ datagen = ImageDataGenerator(samplewise_center=True)
 draw_images(datagen, x, "result_samplewise_center.jpg")
 ```
 
+【画像】
+
 ## samplewise_std_normalization
 
 ```python
@@ -159,32 +172,38 @@ datagen = ImageDataGenerator(samplewise_std_normalization=True)
 draw_images(datagen, x, "result_samplewise_std_normalization.jpg")
 ```
 
-# ZCA白色化
+【画像】
 
+## ZCA白色化
+
+ZCA白色化は少し特別。一枚の画像から生成するのではなく、画像集合に対して適用するので入力は一枚の画像`x`ではなく、`X_train`など画像集合を渡す。また、ZCA白色化を使うときは`datagen.fit()`を使ってあらかじめ統計量を計算しておく必要があるので注意。試しにCIFAR-10の訓練データ画像に対してZCA白色化を適用し、適用後の画像がどうなるか調べた。
 
 ```python
-if __name__ == '__main__':
-    img_rows, img_cols, img_channels = 32, 32, 3
-    batch_size = 16
-    nb_classes = 10
+img_rows, img_cols, img_channels = 32, 32, 3
+batch_size = 16
+nb_classes = 10
 
-    # CIFAR-10データをロード
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+# CIFAR-10データをロード
+(X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
-    # 画素値を0-1に変換
-    X_train = X_train.astype('float32')
-    X_train /= 255.0
+# 画素値を0-1に変換
+X_train = X_train.astype('float32')
+X_train /= 255.0
 
-    draw(X_train[0:batch_size], 'original.png')
+draw(X_train[0:batch_size], 'zca_whitening_before.png')
 
-    # データ拡張
-    datagen = ImageDataGenerator(zca_whitening=True)
+# データ拡張
+datagen = ImageDataGenerator(zca_whitening=True)
 
-    datagen.fit(X_train)
-    g = datagen.flow(X_train, y_train, batch_size, shuffle=False)
-    X_batch, y_batch = g.next()
-    # print(X_batch.shape)
-    # print(y_batch.shape)
+datagen.fit(X_train)
+g = datagen.flow(X_train, y_train, batch_size, shuffle=False)
+X_batch, y_batch = g.next()
+print(X_batch.shape)
+print(y_batch.shape)
 
-    draw(X_batch, 'result_zca_whitening.png')
+draw(X_batch, 'zca_whitening_after.png')
 ```
+
+【画像】
+
+長くなったので畳み込みニューラルネットワークとデータ拡張を組み合わせた実験は次回にまわそう。
