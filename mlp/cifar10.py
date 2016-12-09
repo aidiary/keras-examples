@@ -4,8 +4,22 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.utils import np_utils
 
 
+def save_history(history, result_file):
+    loss = history.history['loss']
+    acc = history.history['acc']
+    val_loss = history.history['val_loss']
+    val_acc = history.history['val_acc']
+    nb_epoch = len(acc)
+
+    with open(result_file, "w") as fp:
+        fp.write("epoch\tloss\tacc\tval_loss\tval_acc\n")
+        for i in range(nb_epoch):
+            fp.write("%d\t%f\t%f\t%f\t%f\n" %
+                     (i, loss[i], acc[i], val_loss[i], val_acc[i]))
+
+
 if __name__ == '__main__':
-    nb_epoch = 50
+    nb_epoch = 200
     batch_size = 128
     nb_classes = 10
 
@@ -42,11 +56,13 @@ if __name__ == '__main__':
     model.summary()
 
     # training
-    model.fit(X_train, Y_train,
-              batch_size=batch_size,
-              nb_epoch=nb_epoch,
-              verbose=1,
-              validation_data=(X_test, Y_test))
+    history = model.fit(X_train, Y_train,
+                        batch_size=batch_size,
+                        nb_epoch=nb_epoch,
+                        verbose=1,
+                        validation_data=(X_test, Y_test))
+
+    save_history(history, 'history.txt')
 
     loss, acc = model.evaluate(X_test, Y_test, verbose=0)
     print('Test loss:', loss)
