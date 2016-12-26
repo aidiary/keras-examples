@@ -2,8 +2,9 @@ from keras.applications.vgg16 import VGG16
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Activation, Dropout, Flatten, Dense
+from keras import optimizers
 import numpy as np
-from dog_cat import save_history
+from cat_dog import save_history
 
 
 img_width, img_height = 150, 150
@@ -78,8 +79,8 @@ def train_top_model():
     model.add(Dropout(0.5))
     model.add(Dense(1, activation='sigmoid'))
 
-    model.compile(optimizer='rmsprop',
-                  loss='binary_crossentropy',
+    model.compile(loss='binary_crossentropy',
+                  optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
                   metrics=['accuracy'])
 
     history = model.fit(train_data, train_labels,
