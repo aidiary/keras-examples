@@ -26,7 +26,7 @@ nb_samples_per_class = 70
 
 nb_train_samples = 1190
 nb_val_samples = 170
-nb_epoch = 50
+nb_epoch = 100
 
 top_model_weights_path = 'bottleneck_fc_model.h5'
 
@@ -96,7 +96,7 @@ def train_top_model():
     model.summary()
 
     model.compile(loss='categorical_crossentropy',
-                  optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
+                  optimizer='adam',
                   metrics=['accuracy'])
 
     history = model.fit(train_data, train_labels,
