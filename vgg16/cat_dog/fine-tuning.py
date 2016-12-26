@@ -5,7 +5,7 @@ from keras.layers import Input, Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
 import numpy as np
-from cat_dog import save_history
+from smallcnn import save_history
 
 # https://gist.github.com/fchollet/7eb39b44eb9e16e59632d25fb3119975
 

@@ -4,7 +4,7 @@ from keras.models import Sequential
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras import optimizers
 import numpy as np
-from cat_dog import save_history
+from smallcnn import save_history
 
 
 img_width, img_height = 150, 150

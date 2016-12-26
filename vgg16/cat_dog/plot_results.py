@@ -1,9 +1,9 @@
 import os
 import matplotlib.pyplot as plt
 
-result_file1 = os.path.join('results', 'history_first_try.txt')
+result_file1 = os.path.join('results', 'history_smallcnn.txt')
 result_file2 = os.path.join('results', 'history_vgg16.txt')
-result_file3 = os.path.join('results', 'history_finetune.txt')
+result_file3 = os.path.join('results', 'history_finetuning.txt')
 
 def load_results(filename):
     epoch_list = []
@@ -35,9 +35,9 @@ epoch2, val_loss2, val_acc2 = load_results(result_file2)
 epoch3, val_loss3, val_acc3 = load_results(result_file3)
 
 plt.figure()
-plt.plot(epoch1, val_loss1, 'b-', marker='.', label='first try')
+plt.plot(epoch1, val_loss1, 'b-', marker='.', label='small cnn')
 plt.plot(epoch2, val_loss2, 'r-', marker='.', label='vgg16')
-plt.plot(epoch3, val_loss3, 'g-', marker='.', label='fine-tune')
+plt.plot(epoch3, val_loss3, 'g-', marker='.', label='fine-tuning')
 plt.grid()
 plt.legend()
 plt.xlabel('epoch')
@@ -46,12 +46,13 @@ plt.ylabel('val_loss')
 plt.savefig('val_loss.png')
 
 plt.figure()
-plt.plot(epoch1, val_acc1, 'b-', marker='.', label='first try')
+plt.plot(epoch1, val_acc1, 'b-', marker='.', label='small cnn')
 plt.plot(epoch2, val_acc2, 'r-', marker='.', label='vgg16')
-plt.plot(epoch3, val_acc3, 'g-', marker='.', label='fine-tune')
+plt.plot(epoch3, val_acc3, 'g-', marker='.', label='fine-tuning')
 plt.grid()
 plt.legend(loc='lower right')
 plt.xlabel('epoch')
 plt.ylabel('val_acc')
-plt.show()
+plt.ylim((0, 1))
+# plt.show()
 plt.savefig('val_acc.png')

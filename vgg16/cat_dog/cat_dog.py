@@ -39,7 +39,7 @@ if __name__ == '__main__':
     model.add(Activation('sigmoid'))
 
     model.compile(loss='binary_crossentropy',
-                  optimizer='rmsprop',
+                  optimizer='adam',
                   metrics=['accuracy'])
 
     train_datagen = ImageDataGenerator(
