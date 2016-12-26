@@ -104,7 +104,7 @@ def train_top_model():
                         validation_data=(validation_data, validation_labels))
 
     model.save_weights(top_model_weights_path)
-    save_history(history, 'history_vgg16.txt')
+    save_history(history, 'results/history_vgg16.txt')
 
 
 if __name__ == '__main__':
