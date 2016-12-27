@@ -108,5 +108,5 @@ def train_top_model():
 
 
 if __name__ == '__main__':
-    # save_bottleneck_features()
+    save_bottleneck_features()
     train_top_model()
