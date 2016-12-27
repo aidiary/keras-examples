@@ -3,6 +3,10 @@ from keras.models import Sequential, Model
 from keras.layers import Input, Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator
 
+"""
+学習済み重みをロードしてテストデータで精度を求める
+"""
+
 classes = ['Tulip', 'Snowdrop', 'LilyValley', 'Bluebell', 'Crocus',
            'Iris', 'Tigerlily', 'Daffodil', 'Fritillary', 'Sunflower',
            'Daisy', 'ColtsFoot', 'Dandelion', 'Cowslip', 'Buttercup',
@@ -16,17 +20,17 @@ channels = 3
 
 # VGG16
 input_tensor = Input(shape=(img_rows, img_cols, channels))
-vgg16_model = VGG16(include_top=False, weights='imagenet', input_tensor=input_tensor)
+vgg16 = VGG16(include_top=False, weights='imagenet', input_tensor=input_tensor)
 
 # FC
 top_model = Sequential()
-top_model.add(Flatten(input_shape=vgg16_model.output_shape[1:]))
+top_model.add(Flatten(input_shape=vgg16.output_shape[1:]))
 top_model.add(Dense(256, activation='relu'))
 top_model.add(Dropout(0.5))
 top_model.add(Dense(nb_classes, activation='softmax'))
 
 # VGG16とFCを接続
-model = Model(input=vgg16_model.input, output=top_model(vgg16_model.output))
+model = Model(input=vgg16.input, output=top_model(vgg16.output))
 
 # 学習済みの重みをロード
 model.load_weights('fine-tuning.h5')
@@ -48,5 +52,6 @@ test_generator = test_datagen.flow_from_directory(
     batch_size=batch_size,
     shuffle=True)
 
+# 精度評価
 loss, acc = model.evaluate_generator(test_generator, val_samples=nb_test_samples)
 print(loss, acc)
