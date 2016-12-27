@@ -70,5 +70,5 @@ if __name__ == '__main__':
         validation_data=validation_generator,
         nb_val_samples=800)
 
-    model.save_weights('first_try.h5')
-    save_history(history, 'history.txt')
+    model.save_weights('smallcnn.h5')
+    save_history(history, 'history_smallcnn.txt')
