@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 
 result_file1 = os.path.join('results', 'history_smallcnn.txt')
-result_file2 = os.path.join('results', 'history_vgg16.txt')
+result_file2 = os.path.join('results', 'history_extractor.txt')
 result_file3 = os.path.join('results', 'history_finetuning.txt')
 
 def load_results(filename):
@@ -35,8 +35,8 @@ epoch2, val_loss2, val_acc2 = load_results(result_file2)
 epoch3, val_loss3, val_acc3 = load_results(result_file3)
 
 plt.figure()
-plt.plot(epoch1, val_loss1, 'b-', marker='.', label='small cnn')
-plt.plot(epoch2, val_loss2, 'r-', marker='.', label='vgg16')
+plt.plot(epoch1, val_loss1, 'b-', marker='.', label='smallcnn')
+plt.plot(epoch2, val_loss2, 'r-', marker='.', label='extractor')
 plt.plot(epoch3, val_loss3, 'g-', marker='.', label='fine-tuning')
 plt.grid()
 plt.legend()
@@ -46,8 +46,8 @@ plt.ylabel('val_loss')
 plt.savefig('val_loss.png')
 
 plt.figure()
-plt.plot(epoch1, val_acc1, 'b-', marker='.', label='small cnn')
-plt.plot(epoch2, val_acc2, 'r-', marker='.', label='vgg16')
+plt.plot(epoch1, val_acc1, 'b-', marker='.', label='smallcnn')
+plt.plot(epoch2, val_acc2, 'r-', marker='.', label='extractor')
 plt.plot(epoch3, val_acc3, 'g-', marker='.', label='fine-tuning')
 plt.grid()
 plt.legend(loc='lower right')
