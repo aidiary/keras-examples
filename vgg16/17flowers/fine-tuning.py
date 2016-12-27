@@ -35,13 +35,13 @@ if __name__ == '__main__':
     # VGG16モデルと学習済み重みをロード
     # Fully-connected層（FC）はいらないのでinclude_top=False）
     input_tensor = Input(shape=(img_rows, img_cols, 3))
-    vgg16_model = VGG16(include_top=False, weights='imagenet', input_tensor=input_tensor)
-    # vgg16_model.summary()
+    vgg16 = VGG16(include_top=False, weights='imagenet', input_tensor=input_tensor)
+    # vgg16.summary()
 
     # FC層を構築
     # Flattenへの入力指定はバッチ数を除く
     top_model = Sequential()
-    top_model.add(Flatten(input_shape=vgg16_model.output_shape[1:]))
+    top_model.add(Flatten(input_shape=vgg16.output_shape[1:]))
     top_model.add(Dense(256, activation='relu'))
     top_model.add(Dropout(0.5))
     top_model.add(Dense(nb_classes, activation='softmax'))
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     top_model.load_weights(top_model_weights_path)
 
     # VGG16とFCを接続
-    model = Model(input=vgg16_model.input, output=top_model(vgg16_model.output))
+    model = Model(input=vgg16.input, output=top_model(vgg16.output))
 
     # 最後のconv層の直前までの層をfreeze
     for layer in model.layers[:15]:
