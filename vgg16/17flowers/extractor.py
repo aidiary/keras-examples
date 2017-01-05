@@ -26,7 +26,7 @@ nb_samples_per_class = 70
 
 nb_train_samples = 1190
 nb_val_samples = 170
-nb_epoch = 100
+nb_epoch = 50
 
 top_model_weights_path = 'bottleneck_fc_model.h5'
 
