@@ -32,7 +32,7 @@ fc.add(Dense(nb_classes, activation='softmax'))
 model = Model(input=vgg16.input, output=fc(vgg16.output))
 
 # 学習済みの重みをロード
-model.load_weights('fine-tuning.h5')
+model.load_weights('results/fine-tuning.h5')
 
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
