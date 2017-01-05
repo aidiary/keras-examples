@@ -1,4 +1,6 @@
 import os
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 result_file1 = os.path.join('results', 'history_smallcnn.txt')
