@@ -96,7 +96,7 @@ def train_top_model():
     model.summary()
 
     model.compile(loss='categorical_crossentropy',
-                  optimizer='adam',
+                  optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
                   metrics=['accuracy'])
 
     history = model.fit(train_data, train_labels,
@@ -104,7 +104,7 @@ def train_top_model():
                         validation_data=(validation_data, validation_labels))
 
     model.save_weights(top_model_weights_path)
-    save_history(history, 'results/history_vgg16.txt')
+    save_history(history, 'results/history_extractor.txt')
 
 
 if __name__ == '__main__':
