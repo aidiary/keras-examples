@@ -1,3 +1,4 @@
+import os
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential, Model
@@ -26,9 +27,9 @@ nb_train_samples = 1190
 nb_val_samples = 170
 nb_epoch = 50
 
-# vgg16.pyで学習済みのFC層の重み
-# デフォルトのVGG16ではほとんど精度が出なかったがこの重みを使った方がよい
-top_model_weights_path = 'bottleneck_fc_model.h5'
+result_dir = 'results'
+if not os.path.exists(result_dir):
+    os.mkdir(result_dir)
 
 
 if __name__ == '__main__':
@@ -47,8 +48,7 @@ if __name__ == '__main__':
     top_model.add(Dense(nb_classes, activation='softmax'))
 
     # 学習済みのFC層の重みをロード
-    # ランダムな重みではうまくいかない
-    top_model.load_weights(top_model_weights_path)
+    top_model.load_weights(os.path.join(result_dir, 'bottleneck_fc_model.h5'))
 
     # VGG16とFCを接続
     model = Model(input=vgg16.input, output=top_model(vgg16.output))
@@ -57,7 +57,6 @@ if __name__ == '__main__':
     for layer in model.layers[:15]:
         layer.trainable = False
 
-    # TODO: ここでAdamを使うとうまくいかない
     # Fine-tuningのときはSGDの方がよい？
     model.compile(loss='categorical_crossentropy',
                   optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
@@ -97,5 +96,5 @@ if __name__ == '__main__':
         validation_data=validation_generator,
         nb_val_samples=nb_val_samples)
 
-    model.save_weights('fine-tuning.h5')
-    save_history(history, 'results/history_finetuning.txt')
+    model.save_weights(os.path.join(result_dir, 'finetuning.h5'))
+    save_history(history, os.path.join(result_dir, 'history_finetuning.txt'))

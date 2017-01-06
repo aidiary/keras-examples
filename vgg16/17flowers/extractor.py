@@ -1,3 +1,4 @@
+import os
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
@@ -28,7 +29,9 @@ nb_train_samples = 1190
 nb_val_samples = 170
 nb_epoch = 50
 
-top_model_weights_path = 'bottleneck_fc_model.h5'
+result_dir = 'results'
+if not os.path.exists(result_dir):
+    os.mkdir(result_dir)
 
 
 def save_bottleneck_features():
@@ -55,7 +58,8 @@ def save_bottleneck_features():
 
     # ジェネレータから生成される画像を入力し、VGG16の出力をファイルに保存
     bottleneck_features_train = model.predict_generator(generator, nb_train_samples)
-    np.save('bottleneck_features_train.npy', bottleneck_features_train)
+    np.save(os.path.join(result_dir, 'bottleneck_features_train.npy'),
+            bottleneck_features_train)
 
     # バリデーションセットを生成するジェネレータを作成
     generator = datagen.flow_from_directory(
@@ -69,7 +73,8 @@ def save_bottleneck_features():
 
     # ジェネレータから生成される画像を入力し、VGG16の出力をファイルに保存
     bottleneck_features_validation = model.predict_generator(generator, nb_val_samples)
-    np.save('bottleneck_features_validation.npy', bottleneck_features_validation)
+    np.save(os.path.join(result_dir, 'bottleneck_features_validation.npy'),
+            bottleneck_features_validation)
 
 
 def train_top_model():
@@ -77,12 +82,12 @@ def train_top_model():
     # 訓練データをロード
     # ジェネレータではshuffle=Falseなのでクラスは順番に出てくる
     # one-hot vector表現へ変換が必要
-    train_data = np.load('bottleneck_features_train.npy')
+    train_data = np.load(os.path.join(result_dir, 'bottleneck_features_train.npy'))
     train_labels = [i // nb_samples_per_class for i in range(nb_train_samples)]
     train_labels = np_utils.to_categorical(train_labels, nb_classes)
 
     # バリデーションデータをロード
-    validation_data = np.load('bottleneck_features_validation.npy')
+    validation_data = np.load(os.path.join(result_dir, 'bottleneck_features_validation.npy'))
     validation_labels = [i // nb_samples_per_class for i in range(nb_val_samples)]
     validation_labels = np_utils.to_categorical(validation_labels, nb_classes)
 
@@ -103,8 +108,8 @@ def train_top_model():
                         nb_epoch=nb_epoch, batch_size=batch_size,
                         validation_data=(validation_data, validation_labels))
 
-    model.save_weights(top_model_weights_path)
-    save_history(history, 'results/history_extractor.txt')
+    model.save_weights(os.path.join(result_dir, 'bottleneck_fc_model.h5'))
+    save_history(history, os.path.join(result_dir, 'history_extractor.txt'))
 
 
 if __name__ == '__main__':

@@ -3,9 +3,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-result_file1 = os.path.join('results', 'history_smallcnn.txt')
-result_file2 = os.path.join('results', 'history_extractor.txt')
-result_file3 = os.path.join('results', 'history_finetuning.txt')
+result_dir = 'results'
+
+result_file1 = os.path.join(result_dir, 'history_smallcnn.txt')
+result_file2 = os.path.join(result_dir, 'history_extractor.txt')
+result_file3 = os.path.join(result_dir, 'history_finetuning.txt')
 
 def load_results(filename):
     epoch_list = []
@@ -39,22 +41,22 @@ epoch3, val_loss3, val_acc3 = load_results(result_file3)
 plt.figure()
 plt.plot(epoch1, val_loss1, 'b-', marker='.', label='smallcnn')
 plt.plot(epoch2, val_loss2, 'r-', marker='.', label='extractor')
-plt.plot(epoch3, val_loss3, 'g-', marker='.', label='fine-tuning')
+plt.plot(epoch3, val_loss3, 'g-', marker='.', label='finetuning')
 plt.grid()
 plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('val_loss')
 # plt.show()
-plt.savefig('val_loss.png')
+plt.savefig(os.path.join(result_dir, 'val_loss.png'))
 
 plt.figure()
 plt.plot(epoch1, val_acc1, 'b-', marker='.', label='smallcnn')
 plt.plot(epoch2, val_acc2, 'r-', marker='.', label='extractor')
-plt.plot(epoch3, val_acc3, 'g-', marker='.', label='fine-tuning')
+plt.plot(epoch3, val_acc3, 'g-', marker='.', label='finetuning')
 plt.grid()
 plt.legend(loc='lower right')
 plt.xlabel('epoch')
 plt.ylabel('val_acc')
 plt.ylim((0, 1))
 # plt.show()
-plt.savefig('val_acc.png')
+plt.savefig(os.path.join(result_dir, 'val_acc.png'))

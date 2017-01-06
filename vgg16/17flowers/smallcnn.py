@@ -6,6 +6,12 @@ from keras.utils import np_utils
 from keras.utils.visualize_util import plot
 from keras.preprocessing.image import ImageDataGenerator
 
+nb_epoch = 50
+
+result_dir = 'results'
+if not os.path.exists(result_dir):
+    os.mkdir(result_dir)
+
 
 def save_history(history, result_file):
     loss = history.history['loss']
@@ -21,14 +27,6 @@ def save_history(history, result_file):
 
 
 if __name__ == '__main__':
-    nb_epoch = 50
-    result_dir = 'results'
-
-    print('nb_epoch:', nb_epoch)
-    print('result_dir:', result_dir)
-
-    if not os.path.exists(result_dir):
-        os.mkdir(result_dir)
 
     classes = ['Tulip', 'Snowdrop', 'LilyValley', 'Bluebell', 'Crocus',
                'Iris', 'Tigerlily', 'Daffodil', 'Fritillary', 'Sunflower',

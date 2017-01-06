@@ -16,8 +16,9 @@ nb_epoch = 50
 
 result_dir = 'results'
 if not os.path.exists(result_dir):
-
     os.mkdir(result_dir)
+
+
 def save_bottleneck_features():
     """VGG16にDog vs Catの訓練画像、バリデーション画像を入力し、
     ボトルネック特徴量（FC層の直前の出力）をファイルに保存する"""
