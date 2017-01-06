@@ -48,7 +48,7 @@ if __name__ == '__main__':
     top_model.add(Dense(nb_classes, activation='softmax'))
 
     # 学習済みのFC層の重みをロード
-    top_model.load_weights(os.path.join(result_dir, 'bottleneck_fc_model.h5'))
+    # top_model.load_weights(os.path.join(result_dir, 'bottleneck_fc_model.h5'))
 
     # VGG16とFCを接続
     model = Model(input=vgg16.input, output=top_model(vgg16.output))
