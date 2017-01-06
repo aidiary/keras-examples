@@ -1,7 +1,16 @@
 *.h5
 *.json
 *.tgz
+*.zip
+*.npy
+run.sh
 images
+jpg
+train
+train_images
+test_images
+data
+tasks_1-20_v1-2
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
