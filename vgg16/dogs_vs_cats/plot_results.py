@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 result_file1 = os.path.join('results', 'history_smallcnn.txt')
 result_file2 = os.path.join('results', 'history_extractor.txt')
 result_file3 = os.path.join('results', 'history_finetuning.txt')
+result_file4 = os.path.join('results', 'history_finetuning_from_random.txt')
 
 def load_results(filename):
     epoch_list = []
@@ -35,11 +36,13 @@ def load_results(filename):
 epoch1, val_loss1, val_acc1 = load_results(result_file1)
 epoch2, val_loss2, val_acc2 = load_results(result_file2)
 epoch3, val_loss3, val_acc3 = load_results(result_file3)
+epoch4, val_loss4, val_acc4 = load_results(result_file4)
 
 plt.figure()
 plt.plot(epoch1, val_loss1, 'b-', marker='.', label='smallcnn')
 plt.plot(epoch2, val_loss2, 'r-', marker='.', label='extractor')
 plt.plot(epoch3, val_loss3, 'g-', marker='.', label='fine-tuning')
+plt.plot(epoch4, val_loss4, 'g--', marker='.', label='fine-tuning (random)')
 plt.grid()
 plt.legend()
 plt.xlabel('epoch')
@@ -51,6 +54,7 @@ plt.figure()
 plt.plot(epoch1, val_acc1, 'b-', marker='.', label='smallcnn')
 plt.plot(epoch2, val_acc2, 'r-', marker='.', label='extractor')
 plt.plot(epoch3, val_acc3, 'g-', marker='.', label='fine-tuning')
+plt.plot(epoch4, val_acc4, 'g--', marker='.', label='fine-tuning (random)')
 plt.grid()
 plt.legend(loc='lower right')
 plt.xlabel('epoch')
