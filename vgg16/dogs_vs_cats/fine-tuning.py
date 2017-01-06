@@ -1,3 +1,4 @@
+import os
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential, Model
@@ -15,10 +16,7 @@ validation_data_dir = 'data/validation'
 nb_train_samples = 2000
 nb_validation_samples = 800
 nb_epoch = 50
-
-# vgg16.pyで学習済みのFC層の重み
-top_model_weights_path = 'bottleneck_fc_model.h5'
-
+result_dir = 'results'
 
 if __name__ == '__main__':
     # VGG16モデルと学習済み重みをロード
@@ -38,8 +36,8 @@ if __name__ == '__main__':
     top_model.add(Dense(1, activation='sigmoid'))
 
     # 学習済みのFC層の重みをロード
-    # TODO: 要検証：ランダムな重みではうまくいかないようだ
-    top_model.load_weights(top_model_weights_path)
+    # TODO: ランダムな重みでどうなるか試す
+    top_model.load_weights(os.path.join(result_dir, 'bottleneck_fc_model.h5'))
 
     # vgg16_modelはkeras.engine.training.Model
     # top_modelはSequentialとなっている
@@ -70,7 +68,7 @@ if __name__ == '__main__':
     model.summary()
 
     # TODO: ここでAdamを使うとうまくいかない
-    # Fine-tuningのときはSGDの方がよい？
+    # Fine-tuningのときは学習率を小さくしたSGDの方がよい？
     model.compile(loss='binary_crossentropy',
                   optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
                   metrics=['accuracy'])
@@ -103,5 +101,5 @@ if __name__ == '__main__':
         validation_data=validation_generator,
         nb_val_samples=nb_validation_samples)
 
-    model.save_weights('fine-tuning.h5')
-    save_history(history, 'history.txt')
+    model.save_weights(os.path.join(result_dir, 'finetuning.h5'))
+    save_history(history, os.path.join(result_dir, 'history_finetuning.txt'))
