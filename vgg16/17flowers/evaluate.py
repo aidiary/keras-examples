@@ -1,3 +1,4 @@
+import os
 from keras.applications.vgg16 import VGG16
 from keras.models import Sequential, Model
 from keras.layers import Input, Activation, Dropout, Flatten, Dense
@@ -6,6 +7,8 @@ from keras.preprocessing.image import ImageDataGenerator
 """
 学習済み重みをロードしてテストデータで精度を求める
 """
+
+result_dir = 'results'
 
 classes = ['Tulip', 'Snowdrop', 'LilyValley', 'Bluebell', 'Crocus',
            'Iris', 'Tigerlily', 'Daffodil', 'Fritillary', 'Sunflower',
@@ -33,7 +36,7 @@ top_model.add(Dense(nb_classes, activation='softmax'))
 model = Model(input=vgg16.input, output=top_model(vgg16.output))
 
 # 学習済みの重みをロード
-model.load_weights('fine-tuning.h5')
+model.load_weights(os.path.join(result_dir, 'finetuning.h5'))
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
