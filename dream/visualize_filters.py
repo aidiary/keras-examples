@@ -18,9 +18,9 @@ layer_dict = dict([(layer.name, layer) for layer in vgg16.layers])
 print(layer_dict)
 
 # 可視化したい層の名前を指定
-layer_name = 'block5_conv1'
+layer_name = 'block3_conv1'
 # 層は複数のフィルタからなるため可視化したいフィルタのインデックスを指定
-filter_index = 0
+filter_index = 1
 
 # 指定した層の出力
 layer_output = layer_dict[layer_name].output
@@ -35,7 +35,7 @@ grads = K.gradients(loss, input_tensor)[0]
 # 正規化トリック
 grads /= (K.sqrt(K.mean(K.square(grads))) + 1e-5)
 
-# 訓練用の関数
+# ループ関数を定義
 iterate = K.function([input_tensor], [loss, grads])
 
 # ノイズを含んだグレーイメージから開始
@@ -49,3 +49,8 @@ step = 1.0
 for i in range(20):
     loss_value, grads_value = iterate([input_img_data])
     input_img_data += grads_value * step
+    print(loss_value)
+
+img = toimage(input_img_data[0])
+plt.imshow(img)
+plt.show()
