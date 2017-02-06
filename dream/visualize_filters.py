@@ -5,52 +5,69 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.misc import toimage
 
-img_width, img_height = 128, 128
+def deprocess_image(x):
+    # normalize tensor: center on 0., ensure std is 0.1
+    x -= x.mean()
+    x /= (x.std() + 1e-5)
+    x *= 0.1
+
+    # clip to [0, 1]
+    x += 0.5
+    x = np.clip(x, 0, 1)
+
+    # convert to RGB array
+    x *= 255
+    x = np.clip(x, 0, 255).astype('uint8')
+
+    return x
+
+img_width, img_height = 224, 224
 
 input_tensor = Input(shape=(img_height, img_width, 3))
 vgg16 = VGG16(include_top=False, weights='imagenet', input_tensor=input_tensor)
 vgg16.summary()
 
-print(input_tensor)
-print(vgg16.layers[0].input)
-
 layer_dict = dict([(layer.name, layer) for layer in vgg16.layers])
-print(layer_dict)
 
 # 可視化したい層の名前を指定
-layer_name = 'block3_conv1'
+layer_name = 'block5_conv3'
 # 層は複数のフィルタからなるため可視化したいフィルタのインデックスを指定
-filter_index = 1
+#filter_index = 450
+filter_index = 501
+
 
 # 指定した層の出力
 layer_output = layer_dict[layer_name].output
 
-# 指定した層の指定したフィルタの出力の平均を損失とする
+# 指定した層の指定したフィルタの出力の平均を出力とする
+# この出力を最大化する入力画像を勾配法で求める
 # tfなのでchannelは最後の次元
-loss = K.mean(layer_output[:, :, :, filter_index])
+target_output = K.mean(layer_output[:, :, :, filter_index])
 
-# 損失に関する入力画像の勾配を計算
-grads = K.gradients(loss, input_tensor)[0]
+# 出力の入力画像に対する勾配を計算
+# 入力画像を微少量変化させたときの出力の変化量を意味する
+grads = K.gradients(target_output, input_tensor)[0]
 
-# 正規化トリック
-grads /= (K.sqrt(K.mean(K.square(grads))) + 1e-5)
+# 正規化トリック（stepを大きくすれば不要）
+# grads /= (K.sqrt(K.mean(K.square(grads))) + 1e-5)
 
 # ループ関数を定義
-iterate = K.function([input_tensor], [loss, grads])
+iterate = K.function([input_tensor], [target_output, grads])
 
 # ノイズを含んだグレーイメージから開始
-# TODO: 3チャンネルだとグレーにならないのでは？
-input_img_data = np.random.random((1, img_height, img_width, 3)) * 20 + 128
-img = toimage(input_img_data[0])
-plt.imshow(img)
-plt.show()
+input_img_data = np.random.randint(-20, 20, (1, img_height, img_width, 3)) + 128
+input_img_data = input_img_data.astype(np.float64)
 
-step = 1.0
+# 勾配法で入力画像を求める
+step = 10000.0
 for i in range(20):
-    loss_value, grads_value = iterate([input_img_data])
+    target_output_value, grads_value = iterate([input_img_data])
+    # 出力を大きくする方に動かしたいので入力画像に勾配を足し込む
+    # stepは学習率に当たる
     input_img_data += grads_value * step
-    print(loss_value)
+    print(i, target_output_value)
 
-img = toimage(input_img_data[0])
+img = deprocess_image(input_img_data[0])
+print(img)
 plt.imshow(img)
 plt.show()
