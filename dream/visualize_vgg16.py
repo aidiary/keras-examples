@@ -43,7 +43,7 @@ def rmsprop(grads, cache=None, decay_rate=0.95):
     return step, cache
 
 
-def visualize_filter(layer_name, filter_index, num_loop=200):
+def visualize_filter(layer_name, filter_index, num_loops=200):
     if layer_name not in layer_dict:
         print("ERROR: invalid layer name: %s" % layer_name)
         return
@@ -107,7 +107,7 @@ def visualize_filter(layer_name, filter_index, num_loop=200):
 
     # 勾配法で層の出力（loss_value）を最大化するように入力画像を更新する
     cache = None
-    for i in range(num_loop):
+    for i in range(num_loops):
         loss_value, grads_value = iterate([x])
         # loss_valueを大きくしたいので画像に勾配を加える
         step, cache = rmsprop(grads_value, cache)
@@ -132,13 +132,14 @@ if __name__ == '__main__':
 
     # ランダムにクラスを選択
     num_images = 16
+    np.random.seed(0)
     target_index = [np.random.randint(0, 1000) for x in range(num_images)]
 
     # 4x4で描画
     fig = plt.figure(figsize=(8, 8))
     ax = [fig.add_subplot(4, 4, i + 1) for i in range(num_images)]
     for i, a in enumerate(ax):
-        a.imshow(visualize_filter('predictions', i))
+        a.imshow(visualize_filter('predictions', target_index[i], num_loops=1000))
         a.get_xaxis().set_visible(False)
         a.get_yaxis().set_visible(False)
         a.set_aspect('equal')
