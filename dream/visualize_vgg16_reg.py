@@ -3,6 +3,7 @@ from keras.layers import Input
 from keras import backend as K
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 
 img_width, img_height, num_channels = 224, 224, 3
 
@@ -42,7 +43,7 @@ def rmsprop(grads, cache=None, decay_rate=0.95):
     return step, cache
 
 
-def visualize_filter(layer_name, filter_index):
+def visualize_filter(layer_name, filter_index, num_loop=200):
     if layer_name not in layer_dict:
         print("ERROR: invalid layer name: %s" % layer_name)
         return
@@ -104,9 +105,9 @@ def visualize_filter(layer_name, filter_index):
     # plt.imshow(img)
     # plt.show()
 
-    # 勾配法で損失を小さくするように入力画像を更新する
+    # 勾配法で層の出力（loss_value）を最大化するように入力画像を更新する
     cache = None
-    for i in range(200):
+    for i in range(num_loop):
         loss_value, grads_value = iterate([x])
         # loss_valueを大きくしたいので画像に勾配を加える
         step, cache = rmsprop(grads_value, cache)
@@ -120,25 +121,31 @@ def visualize_filter(layer_name, filter_index):
 
 if __name__ == '__main__':
     # visualize_filter('block1_conv2', 1)
-    visualize_filter('block2_conv2', 29)
+    # visualize_filter('block2_conv2', 29)
     # visualize_filter('block5_conv3', 501)
     # visualize_filter('predictions', 20)  # water_ouzel
     # visualize_filter('predictions', 1)   # goldfish
     # visualize_filter('predictions', 9)   # ostrich
     # visualize_filter('predictions', 130) # flamingo
 
-    plt.figure()
+    class_index = json.load(open('imagenet_class_index.json'))
 
-    plt.subplot(2, 2, 1)
-    plt.imshow(visualize_filter('predictions', 20))
+    # ランダムにクラスを選択
+    num_images = 16
+    target_index = [np.random.randint(0, 1000) for x in range(num_images)]
 
-    plt.subplot(2, 2, 2)
-    plt.imshow(visualize_filter('predictions', 1))
+    # 4x4で描画
+    fig = plt.figure(figsize=(8, 8))
+    ax = [fig.add_subplot(4, 4, i + 1) for i in range(num_images)]
+    for i, a in enumerate(ax):
+        a.imshow(visualize_filter('predictions', i))
+        a.get_xaxis().set_visible(False)
+        a.get_yaxis().set_visible(False)
+        a.set_aspect('equal')
 
-    plt.subplot(2, 2, 3)
-    plt.imshow(visualize_filter('predictions', 9))
+        # クラス名を画像に描画
+        a.text(5, 20, class_index['%d' % target_index[i]][1])
 
-    plt.subplot(2, 2, 4)
-    plt.imshow(visualize_filter('predictions', 130))
-
-    plt.show()
+    fig.subplots_adjust(wspace=0, hspace=0)
+    fig.tight_layout()
+    fig.savefig('result.png')
