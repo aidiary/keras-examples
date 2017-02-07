@@ -58,30 +58,30 @@ def visualize_filter(layer_name, filter_index):
 
     # 指定した層の指定したフィルタの出力の平均
     # TODO: 損失は通常最小化を目指すものなので別の名前か負記号をつけた方がよい？
-    lam = 2.0
+    activation_weight = 1.0
     if layer_name == 'predictions':
-        loss = lam * K.mean(layer.output[:, filter_index])
+        loss = activation_weight * K.mean(layer.output[:, filter_index])
     else:
-        loss = lam * K.mean(layer.output[:, :, :, filter_index])
+        loss = activation_weight * K.mean(layer.output[:, :, :, filter_index])
 
     # Lp正則化項
     # 今回の設定ではlossは大きい方がよいためペナルティ項は差し引く
     p = 6.0
-    lam = 10.0
+    lpnorm_weight = 10.0
     if np.isinf(p):
         lp = K.max(input_tensor)
     else:
         lp = K.pow(K.sum(K.pow(K.abs(input_tensor), p)), 1.0 / p)
-    loss -= lam * normalize(input_tensor, lp)
+    loss -= lpnorm_weight * normalize(input_tensor, lp)
 
     # Total Variationによる正則化
     # 今回の設定ではlossは大きい方がよいためペナルティ項は差し引く
     beta = 2.0
-    lam = 10.0
+    tv_weight = 10.0
     a = K.square(input_tensor[:, 1:, :-1, :] - input_tensor[:, :-1, :-1, :])
     b = K.square(input_tensor[:, :-1, 1:, :] - input_tensor[:, :-1, :-1, :])
     tv = K.sum(K.pow(a + b, beta / 2.0))
-    loss -= lam * normalize(input_tensor, tv)
+    loss -= tv_weight * normalize(input_tensor, tv)
 
     # 層の出力の入力画像に対する勾配を求める
     # 入力画像を微小量変化させたときの出力の変化量を意味する
@@ -106,7 +106,7 @@ def visualize_filter(layer_name, filter_index):
 
     # 勾配法で損失を小さくするように入力画像を更新する
     cache = None
-    for i in range(1000):
+    for i in range(200):
         loss_value, grads_value = iterate([x])
         # loss_valueを大きくしたいので画像に勾配を加える
         step, cache = rmsprop(grads_value, cache)
@@ -114,14 +114,31 @@ def visualize_filter(layer_name, filter_index):
         print(i, loss_value)
 
     img = deprocess_image(x[0])
-    plt.imshow(img)
-    plt.show()
+
+    return img
 
 
 if __name__ == '__main__':
-    visualize_filter('block1_conv1', 1)
-    visualize_filter('block5_conv3', 501)
+    # visualize_filter('block1_conv2', 1)
+    visualize_filter('block2_conv2', 29)
+    # visualize_filter('block5_conv3', 501)
     # visualize_filter('predictions', 20)  # water_ouzel
     # visualize_filter('predictions', 1)   # goldfish
     # visualize_filter('predictions', 9)   # ostrich
-    visualize_filter('predictions', 130) # flamingo
+    # visualize_filter('predictions', 130) # flamingo
+
+    plt.figure()
+
+    plt.subplot(2, 2, 1)
+    plt.imshow(visualize_filter('predictions', 20))
+
+    plt.subplot(2, 2, 2)
+    plt.imshow(visualize_filter('predictions', 1))
+
+    plt.subplot(2, 2, 3)
+    plt.imshow(visualize_filter('predictions', 9))
+
+    plt.subplot(2, 2, 4)
+    plt.imshow(visualize_filter('predictions', 130))
+
+    plt.show()
