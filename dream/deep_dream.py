@@ -77,10 +77,17 @@ print('Model loaded.')
 # 層の名前からオブジェクトへの辞書を作成
 layer_dict = dict([(layer.name, layer) for layer in model.layers])
 
+
+def continuity_loss(x):
+    assert K.ndim(x) == 4
+    a = K.square(x[:, :img_height - 1, :img_width - 1, :] - x[:, 1:, :img_width - 1, :])
+    b = K.square(x[:, :img_height - 1, :img_width - 1, :] - x[:, :img_height - 1, 1:, :])
+    return K.sum(K.pow(a + b, 1.25))
+
+
 # 損失を定義
 # 層の出力の最大
 loss = K.variable(0.0)
-
 for layer_name in settings['features']:
     assert layer_name in layer_dict.keys(), 'Layer ' + layer_name + ' not found in model.'
 
@@ -105,4 +112,69 @@ loss += settings['dream_l2'] * K.sum(K.square(dream)) / np.prod(img_size)
 grads = K.gradients(loss, dream)
 
 # 画像を入力して損失と勾配を返す関数
+# TODO: lossとgradsを返すK.functionをわければEvaluator不要では？
 f_outputs = K.function([dream], [loss, grads])
+
+
+# scipyのBFGSには入力xをとるloss(x)とgrads(x)の関数を与える必要がある
+# しかし、f_outputsは入力dreamを入れたときのlossとgradsの値を返してしまう
+class Evaluator(object):
+    def __init__(self):
+        self.loss_value = None
+        self.grad_value = None
+
+    def loss(self, x):
+        """BFGSに与える損失関数"""
+        assert self.loss_value is None
+        # BFGSのloss()への入力はフラット化されているので4Dテンソルに戻す
+        x = x.reshape((1, ) + img_size)
+
+        # loss(x)でlossだけでなくgradもまとめて計算して保存しておく
+        loss_value, grad_values = f_outputs([x])
+
+        # grad_valuesは4Dテンソルのままなのでフラット化する
+        # astype('float64')がないとfmin_l_bfgs_bが下のエラーをはく
+        # ValueError: failed to initialize intent(inout) array -- expected elsize=8 but got 4
+        grad_values = grad_values.flatten().astype('float64')
+
+        self.loss_value = loss_value
+        self.grad_values = grad_values
+
+        return self.loss_value
+
+    def grads(self, x):
+        """BFGSに与える勾配関数"""
+        assert self.loss_value is not None
+
+        # loss(x)のf_output()で計算済みのgradをそのまま返す
+        grad_values = np.copy(self.grad_values)
+
+        self.loss_value = None
+        self.grad_values = None
+
+        return grad_values
+
+evaluator = Evaluator()
+
+# BFGSで損失を最小化する入力画像を求める
+x = preprocess_image(base_image_path)
+for i in range(5):
+    print('Start of iteration', i)
+
+    random_jitter = (settings['jitter'] * 2) * (np.random.random(img_size) - 0.5)
+    x += random_jitter
+
+    # print("***", evaluator.loss(x))
+    # print("***", evaluator.grads(x).shape)
+    # print("***", x.flatten().shape)
+    x, min_val, info = fmin_l_bfgs_b(evaluator.loss, x.flatten(), fprime=evaluator.grads, maxfun=7)
+
+    print('Current loss value:', min_val)
+
+    # 画像に戻して保存
+    x = x.reshape(img_size)
+    x -= random_jitter
+    img = deprocess_image(np.copy(x))
+    fname = result_prefix + '_at_iteration_%d.png' % i
+    imsave(fname, img)
+    print('Image saved as', fname)
