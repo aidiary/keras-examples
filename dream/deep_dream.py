@@ -94,6 +94,7 @@ for layer_name in settings['features']:
     coeff = settings['features'][layer_name]
 
     # 層の出力
+    # 特定のフィルタだけでなく全フィルタ
     x = layer_dict[layer_name].output
     shape = layer_dict[layer_name].output_shape
 
@@ -143,7 +144,7 @@ def grads(x):
 
 # BFGSで損失を最小化する入力画像を求める
 x = preprocess_image(base_image_path)
-for i in range(5):
+for i in range(10):
     print('Start of iteration', i)
 
     random_jitter = (settings['jitter'] * 2) * (np.random.random(img_size) - 0.5)
