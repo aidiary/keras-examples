@@ -113,48 +113,33 @@ grads = K.gradients(loss, dream)
 
 # 画像を入力して損失と勾配を返す関数
 # TODO: lossとgradsを返すK.functionをわければEvaluator不要では？
-f_outputs = K.function([dream], [loss, grads])
+f_loss = K.function([dream], [loss])
+f_grads = K.function([dream], [grads])
 
 
 # scipyのBFGSには入力xをとるloss(x)とgrads(x)の関数を与える必要がある
-# しかし、f_outputsは入力dreamを入れたときのlossとgradsの値を返してしまう
-class Evaluator(object):
-    def __init__(self):
-        self.loss_value = None
-        self.grad_value = None
+def loss(x):
+    """BFGSに与える損失関数"""
+    # BFGSのloss()への入力はフラット化されているので4Dテンソルに戻す
+    x = x.reshape((1, ) + img_size)
 
-    def loss(self, x):
-        """BFGSに与える損失関数"""
-        assert self.loss_value is None
-        # BFGSのloss()への入力はフラット化されているので4Dテンソルに戻す
-        x = x.reshape((1, ) + img_size)
+    # loss(x)でlossだけでなくgradもまとめて計算して保存しておく
+    loss_value = f_loss([x])[0]
 
-        # loss(x)でlossだけでなくgradもまとめて計算して保存しておく
-        loss_value, grad_values = f_outputs([x])
+    return loss_value
 
-        # grad_valuesは4Dテンソルのままなのでフラット化する
-        # astype('float64')がないとfmin_l_bfgs_bが下のエラーをはく
-        # ValueError: failed to initialize intent(inout) array -- expected elsize=8 but got 4
-        grad_values = grad_values.flatten().astype('float64')
 
-        self.loss_value = loss_value
-        self.grad_values = grad_values
+def grads(x):
+    """BFGSに与える勾配関数"""
+    # BFGSのloss()への入力はフラット化されているので4Dテンソルに戻す
+    x = x.reshape((1, ) + img_size)
 
-        return self.loss_value
+    # loss(x)でlossだけでなくgradもまとめて計算して保存しておく
+    grad_values = f_grads([x])[0]
 
-    def grads(self, x):
-        """BFGSに与える勾配関数"""
-        assert self.loss_value is not None
+    grad_values = grad_values.flatten().astype('float64')
 
-        # loss(x)のf_output()で計算済みのgradをそのまま返す
-        grad_values = np.copy(self.grad_values)
-
-        self.loss_value = None
-        self.grad_values = None
-
-        return grad_values
-
-evaluator = Evaluator()
+    return grad_values
 
 # BFGSで損失を最小化する入力画像を求める
 x = preprocess_image(base_image_path)
@@ -167,7 +152,7 @@ for i in range(5):
     # print("***", evaluator.loss(x))
     # print("***", evaluator.grads(x).shape)
     # print("***", x.flatten().shape)
-    x, min_val, info = fmin_l_bfgs_b(evaluator.loss, x.flatten(), fprime=evaluator.grads, maxfun=7)
+    x, min_val, info = fmin_l_bfgs_b(loss, x.flatten(), fprime=grads, maxfun=7)
 
     print('Current loss value:', min_val)
 
