@@ -3,6 +3,8 @@
 
 # はじめに
 
+Deep Learningの学習結果（重み）はブラックボックスで隠れ層のユニットが一体何をやっているのかよくわからないと言われてきたが、ニューラルネットの可視化技術を使うことで徐々に光が当たってきている。
+
 畳み込みニューラルネットで学習したフィルタの可視化というと以前やったようにフィルタの重みを直接可視化する方法がある。しかし、フィルタのサイズは基本的に数ピクセル（MNISTの例では5x5ピクセル）の小さな画像なのでこれを直接画像化しても何が学習されたか把握するのは難しい。たとえば、MNISTを学習した畳み込みニューラルネットのフィルタを可視化した例では各フィルタがどの方向に反応しやすいなどがわかる程度だ。
 
 【画像：MNISTのフィルタの可視化結果】
@@ -75,9 +77,13 @@ img = deprocess_image(x[0])
 【図】勾配を伝搬する図
 
 - この画像を入力したときに指定した層の指定したフィルタがもっとも活性化することを意味する
+- つまり、このニューロンが見たがっている画像がこれということになる
+
+実際は指定したクラスとは似ても似つかないむちゃくちゃな画像が生成されることが多い。しかし、そのむちゃくちゃな画像を入力すると99%以上の確率でそのクラスと認識してしまうのだ。畳み込みニューラルネットは簡単にだませるという論文を参照。
 
 
-このナイーブな方法ではあまり下記のようにはっきりとした画像が生成できなかったがいくつかの工夫を加えるとよりきれいな画像が生成できることがわかった。ここでは、
+
+このナイーブな方法では下記のようにはあまりっきりとした画像が生成できなかったが、いくつかの改良を加えるとよりきれいで鮮やかな画像が生成できることがわかった。自然な画像らしさを表す事前知識（natural image priors）または正則化（極端なピクセル値を取らないなど）を条件として入れる。ここでは、従来研究にのっとり
 
 - VGG16の出力層の活性化関数をsoftmaxからlinearに変更
 - 最適化アルゴリズムをRMSpropに変更
@@ -96,6 +102,9 @@ img = deprocess_image(x[0])
 
 # 結果
 
+- block1_conv1だけ正規化項を入れるとnanになってしまうので外した
+- 他の層は入れたほうが鮮やかな画像になりやすい、入れないと少しくすんだ感じになる
+
 【画像】ConvNetの図と各フィルタの画像を配置
 
 畳み込みニューラルネットの可視化の原理がわかったので次はいよいよDeep Dreamを実装しよう！
@@ -110,3 +119,5 @@ img = deprocess_image(x[0])
 - [Meaning of Weight Gradient in CNN](http://stackoverflow.com/questions/38135950/meaning-of-weight-gradient-in-cnn)
 - D. Erhan et al. [Visualizing Higher-Layer Features of a Deep Network](http://igva2012.wikispaces.asu.edu/file/view/Erhan+2009+Visualizing+higher+layer+features+of+a+deep+network.pdf)
 - K. Simonyan et al. [Deep Inside Convolutional Networks: Visualising Image Classification Models and Saliency Maps](https://arxiv.org/abs/1312.6034)
+- J. Yosinski et al. [Understanding Neural Networks Through Deep Visualization](http://yosinski.com/media/papers/Yosinski__2015__ICML_DL__Understanding_Neural_Networks_Through_Deep_Visualization__.pdf)
+- A. Nguyen et al. [Deep Neural Networks are Easily Fooled: High Confidence Predictions for Unrecognizable Images](https://arxiv.org/abs/1412.1897)
