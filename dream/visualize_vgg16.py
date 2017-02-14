@@ -4,6 +4,7 @@ from keras import backend as K
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import sys
 
 
 def deprocess_image(x):
@@ -119,6 +120,10 @@ def visualize_filter(layer_name, filter_index, num_loops=200):
     return img
 
 
+if len(sys.argv) != 2:
+    print("usage: python visualize_vgg16.py [VGG16 layer name]")
+    sys.exit(1)
+
 # 入力画像のサイズ
 img_width, img_height, num_channels = 224, 224, 3
 
@@ -136,7 +141,7 @@ model.summary()
 
 # 可視化する層の名前
 # model.summary()で表示される名前と同じ
-target_layer = 'predictions'
+target_layer = sys.argv[1]
 assert target_layer in layer_dict.keys(), 'Layer ' + target_layer + ' not found in model.'
 
 # 指定した層のフィルタの最大数
@@ -147,8 +152,8 @@ nrows, ncols = 4, 4
 num_images = nrows * ncols
 # np.random.seed(0)
 
-#target_index = [np.random.randint(0, num_filter) for x in range(num_images)]
-target_index = [65, 18, 130, 779, 302, 100, 870, 366, 99, 9, 351, 144, 63, 704, 248, 282]
+target_index = [np.random.randint(0, num_filter) for x in range(num_images)]
+# target_index = [65, 18, 130, 779, 302, 100, 870, 366, 99, 9, 351, 144, 63, 704, 248, 282]
 
 # 可視化した画像を描画
 fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(8, 8))
@@ -163,7 +168,10 @@ for i in range(nrows):
         ax.set_aspect('equal')
 
         # クラス名を画像に描画
-        ax.text(5, 20, class_index['%d' % target_index[idx]][1])
+        if target_layer == "predictions":
+            ax.text(5, 20, class_index['%d' % target_index[idx]][1])
+        else:
+            ax.text(5, 20, "filter: %d" % target_index[idx])
 
 fig.subplots_adjust(wspace=0, hspace=0)
 fig.tight_layout()
