@@ -145,8 +145,10 @@ num_filter = layer_dict[target_layer].output_shape[-1]
 # target_layerからランダムにフィルタを選択
 nrows, ncols = 4, 4
 num_images = nrows * ncols
-np.random.seed(0)
-target_index = [np.random.randint(0, num_filter) for x in range(num_images)]
+# np.random.seed(0)
+
+#target_index = [np.random.randint(0, num_filter) for x in range(num_images)]
+target_index = [65, 18, 130, 779, 302, 100, 870, 366, 99, 9, 351, 144, 63, 704, 248, 282]
 
 # 可視化した画像を描画
 fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(8, 8))
