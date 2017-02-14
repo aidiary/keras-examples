@@ -97,13 +97,53 @@ img = deprocess_image(x[0])
 
 # 正則化の導入
 
-- Lp norm正則化
-- Total Variation正則化
+## Lp norm正則化
+
+Lpノルムの定義
+https://ja.wikipedia.org/wiki/Lp%E7%A9%BA%E9%96%93
+
+画像のノルムを求めているのでピクセル値が極端に小さな値や大きな値になったときにブレーキをかけるような正則化
+ピクセルのabsを取っているのに注目。小さな値もダメ！
+
+```python
+def normalize(img, value):
+    return value / np.prod(K.int_shape(img)[1:])
+
+# Lpノルム正則化項
+# 今回の設定ではactivationは大きい方がよいため正則化のペナルティ項は引く
+p = 6.0
+lpnorm_weight = 10.0
+if np.isinf(p):
+    lp = K.max(input_tensor)
+else:
+    lp = K.pow(K.sum(K.pow(K.abs(input_tensor), p)), 1.0 / p)
+activation -= lpnorm_weight * normalize(input_tensor, lp)
+```
+
+## Total Variation正則化
+
+はじめて聞いたけど画像処理の分野では割と有名なようだ
+
+Total Variationの定義
+http://convexbrain.osdn.jp/cgi-bin/wifky.pl?p=Total+Variation
+Total Variationが大きいほど滑らかな画像になる
+Total Variationが大きいほどブレーキがかかるようになっているため画像をぼやけさせない正則化と考えられる
+
+```python
+# Total Variationによる正則化
+beta = 2.0
+tv_weight = 10.0
+a = K.square(input_tensor[:, 1:, :-1, :] - input_tensor[:, :-1, :-1, :])
+b = K.square(input_tensor[:, :-1, 1:, :] - input_tensor[:, :-1, :-1, :])
+tv = K.sum(K.pow(a + b, beta / 2.0))
+activation -= tv_weight * normalize(input_tensor, tv)
+```
 
 # 結果
 
 - block1_conv1だけ正規化項を入れるとnanになってしまうので外した
 - 他の層は入れたほうが鮮やかな画像になりやすい、入れないと少しくすんだ感じになる
+- block5_conv3はなかなか難しい多くのニューロンがぼやっとした画像しか生成しない
 
 【画像】ConvNetの図と各フィルタの画像を配置
 
