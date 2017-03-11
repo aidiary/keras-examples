@@ -63,12 +63,12 @@ def combine_images(generated_images):
     for index, image in enumerate(generated_images):
         i = int(index / cols)
         j = index % cols
-        combined_image[width * i:width * (i + 1), height * j:height * (j + 1)] = image[0, :, :]
+        combined_image[width*i:width*(i+1), height*j:height*(j+1)] = image[:, :, 0]
     return combined_image
 
 
 BATCH_SIZE = 32
-NUM_EPOCH = 3
+NUM_EPOCH = 20
 GENERATED_IMAGE_PATH = 'generated_images/'
 
 
